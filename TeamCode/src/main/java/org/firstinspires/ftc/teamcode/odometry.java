@@ -74,6 +74,7 @@ public class odometry extends LinearOpMode {
         verticalRight = hardwareMap.dcMotor.get("br");
         horizontal = hardwareMap.dcMotor.get("fr");
 
+
         robot.innitHardwareMap();
 
         telemetry.addData("Status", "Init Complete");
@@ -136,10 +137,10 @@ public class odometry extends LinearOpMode {
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
             }
             else {
-                fl.setPower(tlV - tlH - turn);
-                fr.setPower(trV - trH + turn);
-                bl.setPower(blV - blH - turn);
-                br.setPower(brV - brH + turn);
+                fl.setPower(tlV - tlH + turn);
+                fr.setPower(trV - trH - turn);
+                bl.setPower(blV - blH + turn);
+                br.setPower(brV - brH - turn);
             }
 
             if (gamepad1.right_stick_button) {
@@ -179,9 +180,9 @@ public class odometry extends LinearOpMode {
         double blV = y * Math.cos(theta + (Math.PI/4));
         double brV = y * Math.sin(theta + (Math.PI/4));
 
-        fl.setPower(tlV - tlH - turn);
-        fr.setPower(trV - trH + turn);
-        bl.setPower(blV - blH - turn);
-        br.setPower(brV - brH + turn);
+        fl.setPower(tlV - tlH + turn);
+        fr.setPower(trV - trH - turn);
+        bl.setPower(blV - blH + turn);
+        br.setPower(brV - brH - turn);
     }
 }

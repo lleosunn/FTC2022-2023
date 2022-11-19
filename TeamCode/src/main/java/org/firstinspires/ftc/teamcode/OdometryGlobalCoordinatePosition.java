@@ -32,9 +32,9 @@ public class OdometryGlobalCoordinatePosition {
         oldAuxPos = currentAuxPos;
         oldIMU = currentIMU;
 
-        currentLeftPos = -encoderLeft.getCurrentPosition();
-        currentRightPos = encoderRight.getCurrentPosition();
-        currentAuxPos = -encoderAux.getCurrentPosition();
+        currentLeftPos = encoderLeft.getCurrentPosition();
+        currentRightPos = -encoderRight.getCurrentPosition();
+        currentAuxPos = encoderAux.getCurrentPosition();
         currentIMU = orientation;
 
         double leftChange = currentLeftPos - oldLeftPos;
