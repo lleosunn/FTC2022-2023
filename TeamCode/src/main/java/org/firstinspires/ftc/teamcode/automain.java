@@ -314,25 +314,32 @@ public class automain extends LinearOpMode {
             telemetry.addData("If signal is not found, this should be true", myPipeline.findContoursRAW());
 
             // Green
-            myPipeline.configureScalarLower(0.0, 0.0, 0.0);
-            myPipeline.configureScalarUpper(255.0, 120.0, 120.0);
+            myPipeline.configureScalarUpper(255.0, 255.0, 255.0);
+            myPipeline.configureScalarLower(145.0, 34.0, 54.0);
             sleep(4000);
             if (myPipeline.signalDetect() == true) {
                 telemetry.addLine("SIGNAL FOUND: A");
                 telemetry.update();
                 sleep(4000);
             } else if (myPipeline.signalDetect() == false) {
-                // Pink
+                // Blue (But should be pink)
                 myPipeline.configureScalarLower(0.0, 150.0, 120.0);
-                myPipeline.configureScalarUpper(255.0, 255.0, 255.0);
-                telemetry.addLine("SIGNAL FOUND: B");
-
+                myPipeline.configureScalarUpper(41.0, 110.0, 240.0);
                 sleep(4000);
-                if (myPipeline.signalDetect() == false) {
+
+                if (myPipeline.signalDetect() == true) {
+                    telemetry.addLine("SIGNAL FOUND: B");
+                }
+               if (myPipeline.signalDetect() == false) {
+                   // Yellow
+                   myPipeline.configureScalarLower(210.0, 146.0, 16.0);
+                   myPipeline.configureScalarUpper(255.0, 255.0, 255.0);
                     sleep(4000);
                     telemetry.addLine("SIGNAL FOUND: C");
                      
-                }
+                } else {
+                   telemetry.addLine("Signal Found: C/None");
+               }
 
             }
             telemetry.update();
