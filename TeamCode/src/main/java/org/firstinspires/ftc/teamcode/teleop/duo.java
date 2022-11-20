@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@TeleOp(name="Duo Main", group="Linear Opmode")
+@TeleOp(name="duo", group="Linear Opmode")
 
 public class duo extends LinearOpMode {
 
@@ -135,7 +135,7 @@ public class duo extends LinearOpMode {
                 modifier = 0.75;
             } else modifier = 0.5;
 
-            fl.setPower(modifier*(y + x + turn));
+            fl.setPower((modifier*1.15)*(y + x + turn));
             fr.setPower(modifier*(y - x - turn));
             bl.setPower(modifier*(y - x + turn));
             br.setPower(modifier*(y + x - turn));
@@ -170,12 +170,16 @@ public class duo extends LinearOpMode {
             if(gamepad2.dpad_up) { // High
                 lift1.setTargetPosition(1000);
                 lift2.setTargetPosition(1000);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
             if(gamepad2.dpad_down) { // Set
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(0.3);
                 lift2.setPower(0.3);
             }
@@ -189,31 +193,40 @@ public class duo extends LinearOpMode {
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
-
-            /*while (gamepad2.left_stick_y > 0) {
-                larm.setPosition(0.25*gamepad2.left_stick_y);
-                rarm.setPosition(0.75*gamepad2.left_stick_y);
-            }
-
-            while (gamepad2.left_stick_y < 0) {
-                larm.setPosition(larm.getPosition() - 0.25*gamepad2.left_stick_y);
-                rarm.setPosition(rarm.getPosition() - 0.25*gamepad2.left_stick_y);
-            }*/
             if(gamepad2.dpad_right) { // Medium
                 lift1.setTargetPosition(600);
                 lift2.setTargetPosition(600);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
 
             if(gamepad2.dpad_left) { // Low
-                larm.setPosition(0.6);
-                rarm.setPosition(0.4);
+                lift1.setTargetPosition(225);
+                lift2.setTargetPosition(225);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift1.setPower(1);
+                lift2.setPower(1);
             }
 
             if(gamepad2.x) { // Flat
                 larm.setPosition(0.9);
                 rarm.setPosition(0.1);
+            }
+
+            if(gamepad2.left_stick_y > 0){
+                lift1.setTargetPosition(lift1.getCurrentPosition()-50);
+                lift2.setTargetPosition(lift2.getCurrentPosition()-50);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
+            }
+            if(gamepad2.left_stick_y < 0){
+                lift1.setTargetPosition(lift1.getCurrentPosition()+50);
+                lift2.setTargetPosition(lift2.getCurrentPosition()+50);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
             }
 
 
