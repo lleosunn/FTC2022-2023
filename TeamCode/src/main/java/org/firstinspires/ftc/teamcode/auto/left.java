@@ -140,7 +140,6 @@ public class left extends LinearOpMode {
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         robot.innitHardwareMap();
-        resetRuntime();
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
@@ -175,6 +174,8 @@ public class left extends LinearOpMode {
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bclaw.setPosition(0.5);
         fclaw.setPosition(0.5);
+        resetRuntime();
+
 
         double color = 0;
 
@@ -186,8 +187,8 @@ public class left extends LinearOpMode {
             telemetry.addData("Y Position", globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH);
             telemetry.addData("Orientation (Degrees)", globalPositionUpdate.returnOrientation());
             telemetry.addData("imu (degrees)", getAngle());
-
             telemetry.addData("time", getRuntime());
+            telemetry.addData("color", color);
             telemetry.update();
 
             Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
@@ -196,12 +197,12 @@ public class left extends LinearOpMode {
                     hsvValues);
 
             if (getRuntime() < 3){ // drive to cone
-                moveTo(0, -15, 0,
+                moveTo(0, -18, 0,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 larm.setPosition(0.25);
-                rarm.setPosition(0.75);
+                rarm.setPosition(0.85);
             }
-            if (getRuntime() > 3 && getRuntime() < 5){ // detect color
+            while (getRuntime() > 3 && getRuntime() < 4){ // detect color
                 if (sensorColor.red() > sensorColor.blue()) { // Detect Red
                     if (sensorColor.red() > sensorColor.green()) {
                         telemetry.addLine("RED (A)");
@@ -221,8 +222,8 @@ public class left extends LinearOpMode {
                     }
                 }
             }
-            if (getRuntime() > 5 && getRuntime() < 7) { // drive to pole
-                moveTo(0, -48, 0,
+            if (getRuntime() > 4 && getRuntime() < 6) { // drive to pole
+                moveTo(0, -56, 0,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(1000);
                 lift2.setTargetPosition(1000);
@@ -231,17 +232,23 @@ public class left extends LinearOpMode {
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
-            if (getRuntime() > 7 && getRuntime() < 10) { // turn to pole
-                moveTo(-5, -55, -45,
+            if (getRuntime() > 6 && getRuntime() < 7) { // drive to pole
+                moveTo(0, -50, -45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
 
             }
+            if (getRuntime() > 7 && getRuntime() < 10) { // drive to pole
+                moveTo(-5, -58, -50,
+                        globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+
+            }
+
             if (getRuntime() > 10 && getRuntime() < 11) { // deposit
                 bclaw.setPosition(1);
                 fclaw.setPosition(0);
             }
-            if (getRuntime() > 11 && getRuntime() < 14) { // get ready to park
-                moveTo(0, -48, 0,
+            if (getRuntime() > 11 && getRuntime() < 12) { // get ready to park
+                moveTo(0, -48, -90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
@@ -254,17 +261,17 @@ public class left extends LinearOpMode {
                 bclaw.setPosition(0.5);
                 fclaw.setPosition(0.5);
             }
-            if (getRuntime() > 14 && getRuntime() < 15) { // get ready to park
+            if (getRuntime() > 12 && getRuntime() < 15) { // park
                 if (color == 1){
-                    moveTo(24, -48, 0,
+                    moveTo(23, -48, -90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
-                else if (color == 3) {
-                    moveTo(-24, -48, 0,
+                else if (color == 2) {
+                    moveTo(0, -48, -90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
                 else {
-                    moveTo(0, -48, 0,
+                    moveTo(-24, -48, -90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
             }
@@ -280,21 +287,36 @@ public class left extends LinearOpMode {
     public void moveTo(double targetX, double targetY, double targetOrientation, double currentX, double currentY, double currentOrientation) {
         double h = 0.07 * (targetX - currentX);
         double v = 0.07 * (targetY - currentY);
-        double t = 0.02 * (currentOrientation - targetOrientation);
+        double t = 0.03 * (currentOrientation - targetOrientation);
         double x;
         double y;
         double turn;
         double theta = Math.toRadians(getAngle());
 
-        if (h > 0.3) {
-            x = 0.3;
-        } else x = h;
-        if (v > 0.3) {
-            y = 0.3;
-        } else y = v;
-        if (t > 0.2) {
-            turn = 0.2;
-        } else turn = t;
+
+        if (h > 0.6) {
+            x = 0.6;
+        }
+        else if (h < -0.6) {
+            x = -0.6;
+        }
+        else x = h;
+
+        if (v > 0.6) {
+            y = 0.6;
+        }
+        else if (v < -0.6) {
+            y = -0.6;
+        }
+        else y = v;
+
+        if (t > 0.3) {
+            turn = 0.3;
+        }
+        else if (t < -0.3) {
+            turn = -0.3;
+        }
+        else turn = t;
 
         double tlH = x * Math.sin(theta - (Math.PI/4));
         double trH = x * Math.cos(theta - (Math.PI/4));
