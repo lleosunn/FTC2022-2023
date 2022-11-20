@@ -17,11 +17,23 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.OdometryGlobalCoordinatePosition;
 import org.firstinspires.ftc.teamcode.RobotHardware;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
 
 import java.util.List;
 
@@ -35,6 +47,12 @@ public class left extends LinearOpMode {
     private DcMotor lift1 = null;
     private DcMotor lift2 = null;
     private ElapsedTime runtime = new ElapsedTime();
+
+    ColorSensor sensorColor;
+    DistanceSensor sensorDistance;
+
+
+
 
     DcMotor verticalLeft, verticalRight, horizontal;
 
@@ -89,6 +107,7 @@ public class left extends LinearOpMode {
     //run program
     @Override
     public void runOpMode() {
+
         imuinit();
 
         //quotations --> what put in calibration file, assigns port to motor (ex. poto 9 - "tl")
@@ -128,6 +147,27 @@ public class left extends LinearOpMode {
         telemetry.addData("angle", getAngle());
         telemetry.update();
 
+        // get a reference to the color sensor.
+        sensorColor = hardwareMap.get(ColorSensor.class, "color1");
+
+        // get a reference to the distance sensor that shares the same name.
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "color1");
+
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F, 0F, 0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+
+        // sometimes it helps to multiply the raw RGB values with a scale factor
+        // to amplify/attentuate the measured values.
+        final double SCALE_FACTOR = 255;
+
+        // get a reference to the RelativeLayout so we can change the background
+        // color of the Robot Controller app to match the hue detected by the RGB sensor.
+        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+
         waitForStart();
 
         OdometryGlobalCoordinatePosition globalPositionUpdate = new OdometryGlobalCoordinatePosition(verticalLeft, verticalRight, horizontal);
@@ -135,6 +175,8 @@ public class left extends LinearOpMode {
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bclaw.setPosition(0.5);
         fclaw.setPosition(0.5);
+
+        double color = 0;
 
         //when it starts
         while (opModeIsActive()) {
@@ -147,7 +189,39 @@ public class left extends LinearOpMode {
 
             telemetry.addData("time", getRuntime());
             telemetry.update();
-            if (getRuntime() < 5){
+
+            Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
+                    (int) (sensorColor.green() * SCALE_FACTOR),
+                    (int) (sensorColor.blue() * SCALE_FACTOR),
+                    hsvValues);
+
+            if (getRuntime() < 3){ // drive to cone
+                moveTo(0, -15, 0,
+                        globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+                larm.setPosition(0.25);
+                rarm.setPosition(0.75);
+            }
+            if (getRuntime() > 3 && getRuntime() < 5){ // detect color
+                if (sensorColor.red() > sensorColor.blue()) { // Detect Red
+                    if (sensorColor.red() > sensorColor.green()) {
+                        telemetry.addLine("RED (A)");
+                        color = 1;
+                    }
+                } else if (sensorColor.blue() > sensorColor.red()) { // Detect Blue
+                    if (sensorColor.blue() > sensorColor.green()) {
+                        telemetry.addLine("BLUE (B)");
+                        color = 2;
+
+                    }
+                } else if (sensorColor.green() > sensorColor.red()) { // Detect Green
+                    if (sensorColor.green() > sensorColor.blue()) {
+                        telemetry.addLine("GREEN (C)");
+                        color = 3;
+
+                    }
+                }
+            }
+            if (getRuntime() > 5 && getRuntime() < 7) { // drive to pole
                 moveTo(0, -48, 0,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(1000);
@@ -156,25 +230,56 @@ public class left extends LinearOpMode {
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);
                 lift2.setPower(1);
-                larm.setPosition(0.25);
-                rarm.setPosition(0.75);
             }
-            if (getRuntime() > 5 && getRuntime() < 7) {
-                moveTo(-7, -55, -45,
+            if (getRuntime() > 7 && getRuntime() < 10) { // turn to pole
+                moveTo(-5, -55, -45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+
             }
-            if (getRuntime() > 7 && getRuntime() < 8) {
+            if (getRuntime() > 10 && getRuntime() < 11) { // deposit
                 bclaw.setPosition(1);
                 fclaw.setPosition(0);
             }
+            if (getRuntime() > 11 && getRuntime() < 14) { // get ready to park
+                moveTo(0, -48, 0,
+                        globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+                lift1.setTargetPosition(0);
+                lift2.setTargetPosition(0);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
+                larm.setPosition(0.95);
+                rarm.setPosition(0.05);
+                bclaw.setPosition(0.5);
+                fclaw.setPosition(0.5);
+            }
+            if (getRuntime() > 14 && getRuntime() < 15) { // get ready to park
+                if (color == 1){
+                    moveTo(24, -48, 0,
+                            globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+                }
+                else if (color == 3) {
+                    moveTo(-24, -48, 0,
+                            globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+                }
+                else {
+                    moveTo(0, -48, 0,
+                            globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
+                }
+            }
+            if (getRuntime() > 15) {
+                stop();
+            }
+
 
 
         }
 
     }
     public void moveTo(double targetX, double targetY, double targetOrientation, double currentX, double currentY, double currentOrientation) {
-        double h = 0.05 * (targetX - currentX);
-        double v = 0.05 * (targetY - currentY);
+        double h = 0.07 * (targetX - currentX);
+        double v = 0.07 * (targetY - currentY);
         double t = 0.02 * (currentOrientation - targetOrientation);
         double x;
         double y;

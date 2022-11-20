@@ -47,7 +47,7 @@ public class OdometryGlobalCoordinatePosition {
         orientationChange = Math.toRadians(IMUChange);
         robotOrientationRadians = Math.toRadians(orientation); //using imu
 
-        double horizontalChange = auxChange - (orientationChange * 8937.34946515); //9250
+        double horizontalChange = auxChange - (orientationChange * 1860); //9250
 
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;
