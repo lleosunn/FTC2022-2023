@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.List;
 
 @Autonomous
-public class left extends LinearOpMode {
+public class right extends LinearOpMode {
     //declaring motors, distance sensors, timer
     private DcMotor fl = null;
     private DcMotor fr = null;
@@ -233,12 +233,12 @@ public class left extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 7 && getRuntime() < 10) { // drive to pole
-                moveTo(0, -50, -45,
+                moveTo(0, -50, 45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
 
             }
             if (getRuntime() > 10 && getRuntime() < 12) { // drive to pole
-                moveTo(-5, -58, -50,
+                moveTo(3, -56, 50,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
 
             }
@@ -248,7 +248,7 @@ public class left extends LinearOpMode {
                 fclaw.setPosition(0);
             }
             if (getRuntime() > 13 && getRuntime() < 14) { // get ready to park
-                moveTo(0, -48, -90,
+                moveTo(0, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
@@ -263,15 +263,15 @@ public class left extends LinearOpMode {
             }
             if (getRuntime() > 14 && getRuntime() < 17) { // park
                 if (color == 1){
-                    moveTo(23, -48, -90,
+                    moveTo(23, -48, 90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
                 else if (color == 2) {
-                    moveTo(0, -48, -90,
+                    moveTo(0, -48, 90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
                 else {
-                    moveTo(-24, -48, -90,
+                    moveTo(-25, -48, 90,
                             globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 }
             }

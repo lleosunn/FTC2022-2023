@@ -151,8 +151,8 @@ public class duo extends LinearOpMode {
                 rarm.setPosition(0.75);
             }
             if (gamepad2.b) { //intake position
-                larm.setPosition(0.95);
-                rarm.setPosition(0.05);
+                larm.setPosition(0.97);
+                rarm.setPosition(0.03);
             }
             if (gamepad2.left_trigger > 0){ //back claw close
                 bclaw.setPosition(0.5);
