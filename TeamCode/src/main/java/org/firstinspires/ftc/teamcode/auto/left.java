@@ -238,7 +238,7 @@ public class left extends LinearOpMode {
 
             }
             if (getRuntime() > 10 && getRuntime() < 12) { // drive to pole
-                moveTo(-5, -58, -50,
+                moveTo(-5, -58, -48,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
 
             }
