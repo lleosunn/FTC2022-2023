@@ -88,8 +88,8 @@ public class duo extends LinearOpMode {
         bl.setDirection(DcMotor.Direction.REVERSE);
         fr.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
-        lift1.setDirection(DcMotor.Direction.FORWARD);
-        lift2.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift1.setDirection(DcMotor.Direction.REVERSE);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
