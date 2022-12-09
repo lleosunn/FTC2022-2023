@@ -126,8 +126,7 @@ public class doughdaddyRight extends LinearOpMode {
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo bclaw = hardwareMap.get(Servo.class, "bclaw");
-        Servo fclaw = hardwareMap.get(Servo.class, "fclaw");
+        Servo claw = hardwareMap.get(Servo.class, "claw");
 
         lift1.setDirection(DcMotor.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -172,8 +171,7 @@ public class doughdaddyRight extends LinearOpMode {
         OdometryGlobalCoordinatePosition globalPositionUpdate = new OdometryGlobalCoordinatePosition(verticalLeft, verticalRight, horizontal);
         lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bclaw.setPosition(0.5);
-        fclaw.setPosition(0.5);
+        claw.setPosition(0.65);
         resetRuntime();
 
 
@@ -244,8 +242,7 @@ public class doughdaddyRight extends LinearOpMode {
             }
 
             if (getRuntime() > 3 && getRuntime() < 4) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
             if (getRuntime() > 4 && getRuntime() < 4.5) { // get ready to park
                 moveTo(0, -48, 90,
@@ -258,14 +255,16 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
-            if (getRuntime() > 4.5 && getRuntime() < 6.5) { // drive to stack
+            if (getRuntime() > 4.5 && getRuntime() < 6) { // drive to stack
                 moveTo(-24, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
-                bclaw.setPosition(0.82);
-                fclaw.setPosition(0.18);
+                claw.setPosition(0.55);
+
+            }
+            if (getRuntime() > 6 && getRuntime() < 6.5) { // drive to stack
+                claw.setPosition(0.65);
 
             }
             if (getRuntime() > 6.5 && getRuntime() < 8.5) { // drive to pole
@@ -286,8 +285,7 @@ public class doughdaddyRight extends LinearOpMode {
 
             }
             if (getRuntime() > 9 && getRuntime() < 10) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
 
             if (getRuntime() > 10 && getRuntime() < 10.5) { // get ready to park
@@ -301,14 +299,16 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
-            if (getRuntime() > 10.5 && getRuntime() < 12.5) { // drive to stack
+            if (getRuntime() > 10.5 && getRuntime() < 12) { // drive to stack
                 moveTo(-24, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
-                bclaw.setPosition(0.82);
-                fclaw.setPosition(0.18);
+                claw.setPosition(0.55);
+
+            }
+            if (getRuntime() > 12 && getRuntime() < 12.5) { // drive to stack
+                claw.setPosition(0.65);
 
             }
             if (getRuntime() > 12.5 && getRuntime() < 14.5) { // drive to pole
@@ -329,8 +329,7 @@ public class doughdaddyRight extends LinearOpMode {
 
             }
             if (getRuntime() > 15 && getRuntime() < 16) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
 
             if (getRuntime() > 16 && getRuntime() < 16.5) { // get ready to park
@@ -344,14 +343,16 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
-            if (getRuntime() > 16.5 && getRuntime() < 18.5) { // drive to stack
+            if (getRuntime() > 16.5 && getRuntime() < 18) { // drive to stack
                 moveTo(-24, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
-                bclaw.setPosition(0.82);
-                fclaw.setPosition(0.18);
+                claw.setPosition(0.55);
+
+            }
+            if (getRuntime() > 18 && getRuntime() < 18.5) { // drive to stack
+                claw.setPosition(0.65);
 
             }
             if (getRuntime() > 18.5 && getRuntime() < 20.5) { // drive to pole
@@ -372,8 +373,7 @@ public class doughdaddyRight extends LinearOpMode {
 
             }
             if (getRuntime() > 21 && getRuntime() < 22) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
 
             if (getRuntime() > 22 && getRuntime() < 22.5) { // get ready to park
@@ -387,14 +387,16 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
-            if (getRuntime() > 22.5 && getRuntime() < 24.5) { // drive to stack
+            if (getRuntime() > 22.5 && getRuntime() < 24) { // drive to stack
                 moveTo(-24, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
-                bclaw.setPosition(0.82);
-                fclaw.setPosition(0.18);
+                claw.setPosition(0.55);
+
+            }
+            if (getRuntime() > 24 && getRuntime() < 24.5) { // drive to stack
+                claw.setPosition(0.65);
 
             }
             if (getRuntime() > 24.5 && getRuntime() < 26.5) { // drive to pole
@@ -415,8 +417,7 @@ public class doughdaddyRight extends LinearOpMode {
 
             }
             if (getRuntime() > 27 && getRuntime() < 28) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
 
             if (getRuntime() > 28 && getRuntime() < 28.5) { // get ready to park
@@ -430,14 +431,16 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
-            if (getRuntime() > 28.5 && getRuntime() < 30.5) { // drive to stack
+            if (getRuntime() > 28.5 && getRuntime() < 30) { // drive to stack
                 moveTo(-24, -48, 90,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
-                bclaw.setPosition(0.82);
-                fclaw.setPosition(0.18);
+                claw.setPosition(0.55);
+
+            }
+            if (getRuntime() > 30 && getRuntime() < 30.5) { // drive to stack
+                claw.setPosition(0.65);
 
             }
             if (getRuntime() > 30.5 && getRuntime() < 32.5) { // drive to pole
@@ -458,8 +461,7 @@ public class doughdaddyRight extends LinearOpMode {
 
             }
             if (getRuntime() > 33 && getRuntime() < 34) { // deposit
-                bclaw.setPosition(1);
-                fclaw.setPosition(0);
+                claw.setPosition(0.55);
             }
             if (getRuntime() > 34 && getRuntime() < 34.5) { // get ready to park
                 moveTo(0, -48, 90,
@@ -472,8 +474,7 @@ public class doughdaddyRight extends LinearOpMode {
                 lift2.setPower(0.5);
                 larm.setPosition(0.95);
                 rarm.setPosition(0.05);
-                bclaw.setPosition(0.62);
-                fclaw.setPosition(0.38);
+                claw.setPosition(0.65);
             }
             if (getRuntime() > 34.5 && getRuntime() < 36.5) { // park
                 if (color == 1){
