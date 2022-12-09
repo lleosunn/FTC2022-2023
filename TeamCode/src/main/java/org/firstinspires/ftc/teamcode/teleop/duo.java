@@ -81,8 +81,7 @@ public class duo extends LinearOpMode {
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo bclaw = hardwareMap.get(Servo.class, "bclaw");
-        Servo fclaw = hardwareMap.get(Servo.class, "fclaw");
+        Servo claw = hardwareMap.get(Servo.class, "claw");
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -149,22 +148,18 @@ public class duo extends LinearOpMode {
             if (gamepad2.a) { //deposit position
                 larm.setPosition(0.25);
                 rarm.setPosition(0.75);
+                claw.setPosition(0.65);
             }
             if (gamepad2.b) { //intake position
                 larm.setPosition(0.97);
                 rarm.setPosition(0.03);
+                claw.setPosition(0.65);
             }
             if (gamepad2.left_trigger > 0){ //back claw close
-                bclaw.setPosition(0.5);
-            }
-            if (gamepad2.left_bumper){ //back claw open
-                bclaw.setPosition(1);
+                claw.setPosition(0.55);
             }
             if (gamepad2.right_trigger > 0){ //front claw close
-                fclaw.setPosition(0.5);
-            }
-            if (gamepad2.right_bumper) { //front claw open
-                fclaw.setPosition(0);
+                claw.setPosition(0.65);
             }
 
             if(gamepad2.dpad_up) { // High
