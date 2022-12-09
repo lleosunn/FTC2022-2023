@@ -81,15 +81,14 @@ public class solo extends LinearOpMode {
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo bclaw = hardwareMap.get(Servo.class, "bclaw");
-        Servo fclaw = hardwareMap.get(Servo.class, "fclaw");
+        Servo claw = hardwareMap.get(Servo.class, "claw");
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
         fr.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
-        lift1.setDirection(DcMotor.Direction.FORWARD);
-        lift2.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift1.setDirection(DcMotor.Direction.REVERSE);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -117,6 +116,7 @@ public class solo extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
             double theta = Math.toRadians(getAngle());
+            double modifier = 0.5;
 
 //            double flH = x * Math.sin(theta - (Math.PI/4));
 //            double frH = x * Math.cos(theta - (Math.PI/4));
@@ -127,11 +127,10 @@ public class solo extends LinearOpMode {
 //            double frV = y * Math.cos(theta + (Math.PI/4));
 //            double blV = y * Math.cos(theta + (Math.PI/4));
 //            double brV = y * Math.sin(theta + (Math.PI/4));
-
-            fl.setPower(y + x + turn);
-            fr.setPower(y - x - turn);
-            bl.setPower(y - x + turn);
-            br.setPower(y + x - turn);
+            fl.setPower((modifier*1.15)*(y + x + turn));
+            fr.setPower(modifier*(y - x - turn));
+            bl.setPower(modifier*(y - x + turn));
+            br.setPower(modifier*(y + x - turn));
 
 //            fl.setPower(flV - flH - turn);
 //            fr.setPower(frV - frH + turn);
@@ -139,24 +138,20 @@ public class solo extends LinearOpMode {
 //            br.setPower(brV - brH + turn);
 
             if (gamepad1.a) { //deposit position
-                larm.setPosition(0.25);
-                rarm.setPosition(0.75);
+                larm.setPosition(0.16);
+                rarm.setPosition(0.83);
+                claw.setPosition(0.65);
             }
             if (gamepad1.b) { //intake position
-                larm.setPosition(0.95);
-                rarm.setPosition(0.05);
+                larm.setPosition(0.96);
+                rarm.setPosition(0.02);
+                claw.setPosition(0.65);
             }
-            if (gamepad1.left_trigger > 0){ //back claw close
-                bclaw.setPosition(0.5);
+            if (gamepad1.right_trigger > 0){ //claw close
+                claw.setPosition(0.65);
             }
-            if (gamepad1.left_bumper){ //back claw open
-                bclaw.setPosition(1);
-            }
-            if (gamepad1.right_trigger > 0){ //front claw close
-                fclaw.setPosition(0.5);
-            }
-            if (gamepad1.right_bumper) { //front claw open
-                fclaw.setPosition(0);
+            if (gamepad1.left_trigger > 0){ //claw open
+                claw.setPosition(0.55);
             }
 
             if(gamepad1.dpad_up) {
@@ -178,6 +173,18 @@ public class solo extends LinearOpMode {
                 lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
+            }
+            if(gamepad1.left_bumper){
+                lift1.setTargetPosition(lift1.getCurrentPosition()-50);
+                lift2.setTargetPosition(lift2.getCurrentPosition()-50);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
+            }
+            if(gamepad1.right_bumper){
+                lift1.setTargetPosition(lift1.getCurrentPosition()+50);
+                lift2.setTargetPosition(lift2.getCurrentPosition()+50);
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
