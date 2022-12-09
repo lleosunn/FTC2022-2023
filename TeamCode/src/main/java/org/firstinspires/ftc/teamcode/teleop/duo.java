@@ -146,13 +146,13 @@ public class duo extends LinearOpMode {
 //            br.setPower(brV - brH + turn);
 
             if (gamepad2.a) { //deposit position
-                larm.setPosition(0.25);
-                rarm.setPosition(0.75);
+                larm.setPosition(0.16);
+                rarm.setPosition(0.83);
                 claw.setPosition(0.65);
             }
             if (gamepad2.b) { //intake position
-                larm.setPosition(0.97);
-                rarm.setPosition(0.03);
+                larm.setPosition(0.96);
+                rarm.setPosition(0.02);
                 claw.setPosition(0.65);
             }
             if (gamepad2.left_trigger > 0){ //back claw close
