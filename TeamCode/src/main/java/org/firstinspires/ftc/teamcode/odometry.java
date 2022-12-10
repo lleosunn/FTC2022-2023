@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name = "odometry")
 public class odometry extends LinearOpMode {
     //Drive motors
-    DcMotor fl, fr, bl, br;
+    DcMotor fl, fr, bl, br, lift1, lift2;
     //Odometry Wheels
     DcMotor verticalLeft, verticalRight, horizontal;
 
@@ -68,7 +68,10 @@ public class odometry extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
-        RobotHardware robot = new RobotHardware(fl, fr, bl, br);
+
+        lift1 = hardwareMap.get(DcMotor.class, "lift1");
+        lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2);
 
         verticalLeft = hardwareMap.dcMotor.get("fl");
         verticalRight = hardwareMap.dcMotor.get("br");

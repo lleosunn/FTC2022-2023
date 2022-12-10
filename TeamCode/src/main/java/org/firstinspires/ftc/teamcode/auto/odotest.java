@@ -44,6 +44,8 @@ public class odotest extends LinearOpMode {
     private DcMotor fr = null;
     private DcMotor bl = null;
     private DcMotor br = null;
+    private DcMotor lift1 = null;
+    private DcMotor lift2 = null;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -111,7 +113,9 @@ public class odotest extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
-        RobotHardware robot = new RobotHardware(fl, fr, bl, br);
+        lift1 = hardwareMap.get(DcMotor.class, "lift1");
+        lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2);
 
         verticalLeft = hardwareMap.dcMotor.get("fl");
         verticalRight = hardwareMap.dcMotor.get("br");

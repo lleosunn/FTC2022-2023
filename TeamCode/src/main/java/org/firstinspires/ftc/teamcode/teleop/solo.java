@@ -81,7 +81,8 @@ public class solo extends LinearOpMode {
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo claw = hardwareMap.get(Servo.class, "claw");
+        Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
+        Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -140,29 +141,37 @@ public class solo extends LinearOpMode {
             if (gamepad1.a) { //deposit position
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
-                claw.setPosition(0.65);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
             if (gamepad1.b) { //intake position
                 larm.setPosition(0.96);
                 rarm.setPosition(0.02);
-                claw.setPosition(0.65);
+                lclaw.setPosition(0.55);
+                rclaw.setPosition(0.45);
             }
             if (gamepad1.right_trigger > 0){ //claw close
-                claw.setPosition(0.65);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
             if (gamepad1.left_trigger > 0){ //claw open
-                claw.setPosition(0.55);
+                lclaw.setPosition(0.35);
+                rclaw.setPosition(0.65);
             }
 
             if(gamepad1.dpad_up) {
                 lift1.setTargetPosition(1000);
                 lift2.setTargetPosition(1000);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
             if(gamepad1.dpad_down) {
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(0.3);
                 lift2.setPower(0.3);
             }

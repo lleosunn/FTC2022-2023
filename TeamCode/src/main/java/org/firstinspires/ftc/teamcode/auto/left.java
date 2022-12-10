@@ -115,7 +115,7 @@ public class left extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
-        RobotHardware robot = new RobotHardware(fl, fr, bl, br);
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2);
 
         verticalLeft = hardwareMap.dcMotor.get("fl");
         verticalRight = hardwareMap.dcMotor.get("br");

@@ -81,7 +81,8 @@ public class duo extends LinearOpMode {
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo claw = hardwareMap.get(Servo.class, "claw");
+        Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
+        Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -132,7 +133,7 @@ public class duo extends LinearOpMode {
                 modifier = 0.3;
             } else if (gamepad1.left_trigger > 0) {
                 modifier = 0.75;
-            } else modifier = 0.5;
+            } else modifier = 0.4;
 
             fl.setPower((modifier*1.15)*(y + x + turn));
             fr.setPower(modifier*(y - x - turn));
@@ -148,18 +149,22 @@ public class duo extends LinearOpMode {
             if (gamepad2.a) { //deposit position
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
-                claw.setPosition(0.65);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
             if (gamepad2.b) { //intake position
                 larm.setPosition(0.96);
                 rarm.setPosition(0.02);
-                claw.setPosition(0.65);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
-            if (gamepad2.left_trigger > 0){ //back claw close
-                claw.setPosition(0.55);
+            if (gamepad2.right_trigger > 0){ //claw close
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
-            if (gamepad2.right_trigger > 0){ //front claw close
-                claw.setPosition(0.65);
+            if (gamepad2.left_trigger > 0){ //claw open
+                lclaw.setPosition(0.25);
+                rclaw.setPosition(0.75);
             }
 
             if(gamepad2.dpad_up) { // High
@@ -189,8 +194,8 @@ public class duo extends LinearOpMode {
                 lift2.setPower(0.5);
             }
             if(gamepad2.dpad_right) { // Medium
-                lift1.setTargetPosition(600);
-                lift2.setTargetPosition(600);
+                lift1.setTargetPosition(400);
+                lift2.setTargetPosition(400);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);
@@ -198,28 +203,20 @@ public class duo extends LinearOpMode {
             }
 
             if(gamepad2.dpad_left) { // Low
-                lift1.setTargetPosition(225);
-                lift2.setTargetPosition(225);
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift1.setPower(1);
-                lift2.setPower(1);
+                larm.setPosition(0.73);
+                rarm.setPosition(0.25);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
             }
-
-            if(gamepad2.x) { // Flat
-                larm.setPosition(0.9);
-                rarm.setPosition(0.1);
-            }
-
-            if(gamepad2.left_stick_y > 0){
+            if(gamepad2.left_bumper){
                 lift1.setTargetPosition(lift1.getCurrentPosition()-50);
                 lift2.setTargetPosition(lift2.getCurrentPosition()-50);
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
-            if(gamepad2.left_stick_y < 0){
-                lift1.setTargetPosition(lift1.getCurrentPosition()+50);
-                lift2.setTargetPosition(lift2.getCurrentPosition()+50);
+            if(gamepad2.right_bumper){
+                lift1.setTargetPosition(lift1.getCurrentPosition()+100);
+                lift2.setTargetPosition(lift2.getCurrentPosition()+100);
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
