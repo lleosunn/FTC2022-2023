@@ -192,7 +192,7 @@ public class rightcycle extends LinearOpMode {
                 }
             }
             if (getRuntime() > 1.5 && getRuntime() < 3) { // correction
-                moveTo(1, -49, 45,
+                moveTo(1, -50, 45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(1000);
                 lift2.setTargetPosition(1000);
@@ -202,7 +202,7 @@ public class rightcycle extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 3 && getRuntime() < 3.25) { // drop lift
-                moveTo(1, -49, 45,
+                moveTo(1, -50, 45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lift1.setTargetPosition(900);
                 lift2.setTargetPosition(900);
@@ -212,7 +212,7 @@ public class rightcycle extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 3.25 && getRuntime() < 3.5) { // deposit 0
-                moveTo(1, -49, 45,
+                moveTo(1, -50, 45,
                         globalPositionUpdate.returnXCoordinate() / COUNTS_PER_INCH, globalPositionUpdate.returnYCoordinate() / COUNTS_PER_INCH, getAngle() % 360);
                 lclaw.setPosition(0.35);
                 rclaw.setPosition(0.65);
