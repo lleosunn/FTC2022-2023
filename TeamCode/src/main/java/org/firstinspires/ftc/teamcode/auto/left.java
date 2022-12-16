@@ -22,7 +22,7 @@ import android.view.View;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @Autonomous
-public class right extends LinearOpMode {
+public class left extends LinearOpMode {
 
     private DcMotor fl = null;
     private DcMotor fr = null;
@@ -133,7 +133,7 @@ public class right extends LinearOpMode {
         resetRuntime();
         double polex = 0;
         double poley = -46;
-        double poleh = 45;
+        double poleh = -45;
 
         double color = 0;
         while (opModeIsActive()) {
@@ -177,7 +177,7 @@ public class right extends LinearOpMode {
                 }
             }
             if (getRuntime() > 1.5 && getRuntime() < 3) { // correction
-                moveTo(1, -50, 45, update.x(), update.y(), heading % 360);
+                moveTo(1, -50, -45, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(1100);
                 lift2.setTargetPosition(1100);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -186,7 +186,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 3 && getRuntime() < 3.25) { // drop lift
-                moveTo(1, -50, 45, update.x(), update.y(), heading % 360);
+                moveTo(-1, -50, -45, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(900);
                 lift2.setTargetPosition(900);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -195,12 +195,12 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 3.25 && getRuntime() < 3.5) { // deposit 0
-                moveTo(1, -50, 45, update.x(), update.y(), heading % 360);
+                moveTo(-1, -50, -45, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.35);
                 rclaw.setPosition(0.65);
             }
             if (getRuntime() > 3.5 && getRuntime() < 4) { // align with stack
-                moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(400);
                 lift2.setTargetPosition(400);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -213,7 +213,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (getRuntime() > 4 && getRuntime() < 5.5) { // drive to stack
-                moveTo(-27, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(27, -48, -90, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.25);
                 rclaw.setPosition(0.75);
             }
@@ -232,7 +232,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 6.25 && getRuntime() < 6.75) { // drive to pole
-                moveTo(-10, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(10, -48, -90, update.x(), update.y(), heading % 360);
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
             }
@@ -254,7 +254,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.65);
             }
             if (getRuntime() > 8.25 && getRuntime() < 8.75) { // align with stack
-                moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(340);
                 lift2.setTargetPosition(340);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -267,7 +267,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (getRuntime() > 8.75 && getRuntime() < 10.5) { // drive to stack
-                moveTo(-27, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(27, -48, -90, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.25);
                 rclaw.setPosition(0.75);
 
@@ -285,7 +285,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 11 && getRuntime() < 11.5) { // drive to pole
-                moveTo(-10, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(10, -48, -90, update.x(), update.y(), heading % 360);
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
             }
@@ -308,7 +308,7 @@ public class right extends LinearOpMode {
             }
 
             if (getRuntime() > 13 && getRuntime() < 13.5) { // align with stack
-                moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(250);
                 lift2.setTargetPosition(250);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -321,7 +321,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (getRuntime() > 13.5 && getRuntime() < 15.25) { // drive to stack
-                moveTo(-27, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(27, -48, -90, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.25);
                 rclaw.setPosition(0.75);
 
@@ -339,7 +339,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 15.75 && getRuntime() < 16.25) { // drive to pole
-                moveTo(-10, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(10, -48, -90, update.x(), update.y(), heading % 360);
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
 
@@ -363,7 +363,7 @@ public class right extends LinearOpMode {
             }
 
             if (getRuntime() > 17.75 && getRuntime() < 18.25) { // align with stack
-                moveTo(0, -48, 90,
+                moveTo(0, -48, -90,
                         update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(210);
                 lift2.setTargetPosition(210);
@@ -377,7 +377,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (getRuntime() > 18.25 && getRuntime() < 20) { // drive to stack
-                moveTo(-27, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(27, -48, -90, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.25);
                 rclaw.setPosition(0.75);
             }
@@ -394,7 +394,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 20.5 && getRuntime() < 21) { // drive to pole
-                moveTo(-10, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(10, -48, -90, update.x(), update.y(), heading % 360);
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
 
@@ -418,7 +418,7 @@ public class right extends LinearOpMode {
             }
 
             if (getRuntime() > 22.5 && getRuntime() < 23) { // align with stack
-                moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(100);
                 lift2.setTargetPosition(100);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -431,7 +431,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (getRuntime() > 23 && getRuntime() < 24.75) { // drive to stack
-                moveTo(-27, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(27, -48, -90, update.x(), update.y(), heading % 360);
                 lclaw.setPosition(0.25);
                 rclaw.setPosition(0.75);
 
@@ -449,7 +449,7 @@ public class right extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (getRuntime() > 25.25 && getRuntime() < 25.75) { // drive to pole
-                moveTo(-10, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(10, -48, -90, update.x(), update.y(), heading % 360);
                 larm.setPosition(0.16);
                 rarm.setPosition(0.83);
 
@@ -473,7 +473,7 @@ public class right extends LinearOpMode {
                 rclaw.setPosition(0.65);
             }
             if (getRuntime() > 27.25 && getRuntime() < 27.75) { // get ready to park
-                moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -487,13 +487,13 @@ public class right extends LinearOpMode {
             }
             if (getRuntime() > 27.75 && getRuntime() < 30) { // park
                 if (color == 1){
-                    moveTo(23, -48, 90, update.x(), update.y(), heading % 360);
+                    moveTo(23, -48, -90, update.x(), update.y(), heading % 360);
                 }
                 else if (color == 2) {
-                    moveTo(0, -48, 90, update.x(), update.y(), heading % 360);
+                    moveTo(0, -48, -90, update.x(), update.y(), heading % 360);
                 }
                 else {
-                    moveTo(-25, -48, 90, update.x(), update.y(), heading % 360);
+                    moveTo(-25, -48, -90, update.x(), update.y(), heading % 360);
                 }
             }
             if (getRuntime() > 30) {
