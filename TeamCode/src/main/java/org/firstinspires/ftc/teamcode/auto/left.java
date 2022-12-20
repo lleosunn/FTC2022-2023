@@ -125,7 +125,7 @@ public class left extends LinearOpMode {
 
         waitForStart();
 
-        odometry update = new odometry(verticalLeft, verticalRight, horizontal);
+        odometry update = new odometry(verticalLeft, verticalRight, horizontal, 75, imu);
         lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lclaw.setPosition(0.5);
@@ -139,7 +139,7 @@ public class left extends LinearOpMode {
         while (opModeIsActive()) {
 
             double heading = getAngle();
-            update.globalCoordinatePositionUpdate(heading);
+            update.globalCoordinatePositionUpdate();
             telemetry.addData("X Position", update.x() / COUNTS_PER_INCH);
             telemetry.addData("Y Position", update.y() / COUNTS_PER_INCH);
             telemetry.addData("Orientation (Degrees)", update.h());

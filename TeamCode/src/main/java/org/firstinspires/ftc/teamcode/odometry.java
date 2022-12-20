@@ -1,9 +1,43 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import java.io.File;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
-public class odometry {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+
+public class odometry implements Runnable {
     //Odometry wheels
     private DcMotor encoderLeft, encoderRight, encoderAux;
+
+    BNO055IMU imu;
+    BNO055IMU.Parameters parameters;
+    Orientation lastAngles = new Orientation();
+    double globalAngle;
+    public void imuinit() {
+        parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        imu.initialize(parameters);
+    }
+    private double getAngle() {
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+        globalAngle += deltaAngle;
+        lastAngles = angles;
+        return globalAngle;
+    }
 
     //Thead run condition
     private boolean isRunning = true;
@@ -20,13 +54,15 @@ public class odometry {
     //Sleep time interval (milliseconds) for the position update thread
     private int sleepTime;
 
-    public odometry(DcMotor encoderLeft, DcMotor encoderRight, DcMotor encoderAux){
+    public odometry(DcMotor encoderLeft, DcMotor encoderRight, DcMotor encoderAux, int threadSleepDelay, BNO055IMU imu){
         this.encoderLeft = encoderLeft;
         this.encoderRight = encoderRight;
         this.encoderAux = encoderAux;
+        this.imu = imu;
+        sleepTime = threadSleepDelay;
     }
 
-    public void globalCoordinatePositionUpdate(double orientation){
+    public void globalCoordinatePositionUpdate(){
         oldLeftPos = currentLeftPos;
         oldRightPos = currentRightPos;
         oldAuxPos = currentAuxPos;
@@ -35,7 +71,7 @@ public class odometry {
         currentLeftPos = encoderLeft.getCurrentPosition();
         currentRightPos = -encoderRight.getCurrentPosition();
         currentAuxPos = encoderAux.getCurrentPosition();
-        currentIMU = orientation;
+        currentIMU = getAngle();
 
         double leftChange = currentLeftPos - oldLeftPos;
         double rightChange = currentRightPos - oldRightPos;
@@ -45,7 +81,7 @@ public class odometry {
 //        orientationChange = (rightChange - leftChange) / 27703.414;
 //        robotOrientationRadians = ((robotOrientationRadians + orientationChange)); //using odometry
         orientationChange = Math.toRadians(IMUChange);
-        robotOrientationRadians = Math.toRadians(orientation); //using imu
+        robotOrientationRadians = Math.toRadians(currentIMU); //using imu
 
         double horizontalChange = auxChange - (orientationChange * 50); //9250 40.59 35.575 10.3429 133.23 9.7259
 
@@ -63,5 +99,17 @@ public class odometry {
     public double h(){ return Math.toDegrees(robotOrientationRadians); }
 
     public void stop(){ isRunning = false; }
+
+    @Override
+    public void run() {
+        while(isRunning) {
+            globalCoordinatePositionUpdate();
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
