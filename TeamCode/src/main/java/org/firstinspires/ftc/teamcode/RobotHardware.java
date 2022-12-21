@@ -11,19 +11,21 @@ public class RobotHardware {
     DcMotor br;
     DcMotor lift1;
     DcMotor lift2;
+    DcMotor arm;
 
     // odometers
 //    public DcMotor encoderLeft;
 //    public DcMotor encoderRight;
 //    public DcMotor encoderAux;
 
-    public RobotHardware(DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br, DcMotor lift1, DcMotor lift2) {
+    public RobotHardware(DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br, DcMotor lift1, DcMotor lift2, DcMotor arm) {
         this.fl = fl;
         this.fr = fr;
         this.bl = bl;
         this.br = br;
         this.lift1 = lift1;
         this.lift2 = lift2;
+        this.arm = arm;
     }
 
     public void innitHardwareMap() {
@@ -52,6 +54,10 @@ public class RobotHardware {
 
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        arm.setDirection(DcMotorSimple.Direction.FORWARD);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void stop() {

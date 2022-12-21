@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+/*package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -538,4 +538,4 @@ public class right extends LinearOpMode {
         bl.setPower(r + turn);
         br.setPower(l - turn);
     }
-}
+}*/

@@ -102,7 +102,7 @@ public class broken extends LinearOpMode {
         lift1 = hardwareMap.get(DcMotor.class, "lift1");
         lift2 = hardwareMap.get(DcMotor.class, "lift2");
         arm = hardwareMap.get(DcMotor.class, "arm");
-        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2);
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
 
         verticalLeft = hardwareMap.dcMotor.get("fl");
         verticalRight = hardwareMap.dcMotor.get("br");
@@ -418,6 +418,11 @@ public class broken extends LinearOpMode {
     public void alignwithpole() {
         moveTo(0, -46, 45, 2);
     }
+
+    public void lifttopole() {
+
+    }
+
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
         double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
         double distanceY = targetY - (update.y() / COUNTS_PER_INCH);

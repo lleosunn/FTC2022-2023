@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+
 @TeleOp(name="solo", group="Linear Opmode")
 
 public class solo extends LinearOpMode {
@@ -25,6 +26,7 @@ public class solo extends LinearOpMode {
     private DcMotor br = null;
     private DcMotor lift1 = null;
     private DcMotor lift2 = null;
+    private DcMotor arm = null;
 
     BNO055IMU imu;
     BNO055IMU.Parameters parameters;
@@ -78,6 +80,7 @@ public class solo extends LinearOpMode {
         br = hardwareMap.get(DcMotor.class, "br");
         lift1 = hardwareMap.get(DcMotor.class, "lift1");
         lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        arm = hardwareMap.get(DcMotor.class, "arm");
 
         Servo larm = hardwareMap.get(Servo.class, "larm");
         Servo rarm = hardwareMap.get(Servo.class, "rarm");
@@ -90,6 +93,7 @@ public class solo extends LinearOpMode {
         br.setDirection(DcMotor.Direction.FORWARD);
         lift1.setDirection(DcMotor.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm.setDirection(DcMotor.Direction.FORWARD);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -97,20 +101,31 @@ public class solo extends LinearOpMode {
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
+        arm.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.FLOAT));
 
         imuinit();
         waitForStart();
         runtime.reset();
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double lastLoopTime = 0;
+        double desiredArmPos = 0;
+        double error = 0;
+        double lastError = 0;
+        double armPower = 0;
+        double kP = 0.015;
+        double kD = 0.001;
+        double derivative = 0;
+        double timeDiff = 0;
 
         while (opModeIsActive()) {
             telemetry.addData("Angle", getAngle());
-//            telemetry.addData("y", -gamepad1.left_stick_y);
-//            telemetry.addData("x", gamepad1.left_stick_x);
-//            telemetry.addData("turn", gamepad1.right_stick_x);
             telemetry.addData("lift1", lift1.getCurrentPosition());
             telemetry.addData("lift2", lift2.getCurrentPosition());
+            telemetry.addData("arm", arm.getCurrentPosition());
+            telemetry.addData("error", error);
+            telemetry.addData("arm power", armPower);
+            telemetry.addData("derivative", derivative);
             telemetry.update();
 
             double x = gamepad1.left_stick_x;
@@ -119,34 +134,28 @@ public class solo extends LinearOpMode {
             double theta = Math.toRadians(getAngle());
             double modifier = 0.5;
 
-//            double flH = x * Math.sin(theta - (Math.PI/4));
-//            double frH = x * Math.cos(theta - (Math.PI/4));
-//            double blH = x * Math.cos(theta - (Math.PI/4));
-//            double brH = x * Math.sin(theta - (Math.PI/4));
-//
-//            double flV = y * Math.sin(theta + (Math.PI/4));
-//            double frV = y * Math.cos(theta + (Math.PI/4));
-//            double blV = y * Math.cos(theta + (Math.PI/4));
-//            double brV = y * Math.sin(theta + (Math.PI/4));
             fl.setPower((modifier*1.15)*(y + x + turn));
             fr.setPower(modifier*(y - x - turn));
             bl.setPower(modifier*(y - x + turn));
             br.setPower(modifier*(y + x - turn));
 
-//            fl.setPower(flV - flH - turn);
-//            fr.setPower(frV - frH + turn);
-//            bl.setPower(blV - blH - turn);
-//            br.setPower(brV - brH + turn);
+            //pid starts here
 
+            double armPos = arm.getCurrentPosition();
+            error = desiredArmPos - armPos;
+            timeDiff = (runtime.milliseconds() - lastLoopTime)/1000;
+            derivative = kD*(error-lastError)/timeDiff;
+            armPower = kP*error + derivative;
+            arm.setPower(armPower);
+
+            runtime.milliseconds();
             if (gamepad1.a) { //deposit position
-                larm.setPosition(0.16);
-                rarm.setPosition(0.83);
+                desiredArmPos = 200;
                 lclaw.setPosition(0.5);
                 rclaw.setPosition(0.5);
             }
             if (gamepad1.b) { //intake position
-                larm.setPosition(0.96);
-                rarm.setPosition(0.02);
+                desiredArmPos = 0;
                 lclaw.setPosition(0.55);
                 rclaw.setPosition(0.45);
             }
@@ -197,6 +206,9 @@ public class solo extends LinearOpMode {
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
+            lastLoopTime = runtime.milliseconds();
+            lastError = error;
+
 
 
 
