@@ -60,6 +60,14 @@ public class RobotHardware {
         bl.setPower(0);
         br.setPower(0);
     }
+    public void setLift(int height, double power){
+        lift1.setTargetPosition(height);
+        lift2.setTargetPosition(height);
+        lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift1.setPower(power);
+        lift2.setPower(power);
+    }
 
 
 }
