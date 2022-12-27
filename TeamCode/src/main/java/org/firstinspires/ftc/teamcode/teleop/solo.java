@@ -28,47 +28,6 @@ public class solo extends LinearOpMode {
     private DcMotor lift2 = null;
     private DcMotor arm = null;
 
-    BNO055IMU imu;
-    BNO055IMU.Parameters parameters;
-    Orientation lastAngles = new Orientation();
-    double globalAngle;
-
-    public void imuinit() {
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        parameters = new BNO055IMU.Parameters();
-        parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled = false;
-        imu.initialize(parameters);
-
-        telemetry.addData("Gyro Mode", "calibrating...");
-        telemetry.update();
-
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
-        telemetry.addData("Gyro Mode", "ready");
-        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        telemetry.update();
-    }
-    private void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        globalAngle = 0;
-    }
-    private double getAngle() {
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-        globalAngle += deltaAngle;
-        lastAngles = angles;
-        return globalAngle;
-    }
-
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -93,7 +52,7 @@ public class solo extends LinearOpMode {
         br.setDirection(DcMotor.Direction.FORWARD);
         lift1.setDirection(DcMotor.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.REVERSE);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -101,61 +60,40 @@ public class solo extends LinearOpMode {
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.FLOAT));
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        imuinit();
         waitForStart();
         runtime.reset();
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double lastLoopTime = 0;
-        double desiredArmPos = 0;
-        double error = 0;
-        double lastError = 0;
-        double armPower = 0;
-        double kP = 0.015;
-        double kD = 0.001;
-        double derivative = 0;
-        double timeDiff = 0;
 
         while (opModeIsActive()) {
-            telemetry.addData("Angle", getAngle());
             telemetry.addData("lift1", lift1.getCurrentPosition());
             telemetry.addData("lift2", lift2.getCurrentPosition());
             telemetry.addData("arm", arm.getCurrentPosition());
-            telemetry.addData("error", error);
-            telemetry.addData("arm power", armPower);
-            telemetry.addData("derivative", derivative);
             telemetry.update();
 
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
-            double theta = Math.toRadians(getAngle());
-            double modifier = 0.5;
+            double modifier = 1;
 
             fl.setPower((modifier*1.15)*(y + x + turn));
             fr.setPower(modifier*(y - x - turn));
             bl.setPower(modifier*(y - x + turn));
             br.setPower(modifier*(y + x - turn));
 
-            //pid starts here
-
-            double armPos = arm.getCurrentPosition();
-            error = desiredArmPos - armPos;
-            timeDiff = (runtime.milliseconds() - lastLoopTime)/1000;
-            derivative = kD*(error-lastError)/timeDiff;
-            armPower = kP*error + derivative;
-            arm.setPower(armPower);
 
             runtime.milliseconds();
             if (gamepad1.a) { //deposit position
-                desiredArmPos = 200;
+                arm.setTargetPosition(600);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.4);
                 lclaw.setPosition(0.5);
                 rclaw.setPosition(0.5);
             }
             if (gamepad1.b) { //intake position
-                desiredArmPos = 0;
+                arm.setTargetPosition(35);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.3);
                 lclaw.setPosition(0.55);
                 rclaw.setPosition(0.45);
             }
@@ -164,8 +102,8 @@ public class solo extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (gamepad1.left_trigger > 0){ //claw open
-                lclaw.setPosition(0.35);
-                rclaw.setPosition(0.65);
+                lclaw.setPosition(0.25);
+                rclaw.setPosition(0.75);
             }
 
             if(gamepad1.dpad_up) {
@@ -194,6 +132,19 @@ public class solo extends LinearOpMode {
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
+            if(gamepad1.x) {
+                arm.setTargetPosition(0);
+                arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                arm.setPower(0);
+            }
+            if (gamepad1.dpad_left){
+                arm.setTargetPosition(arm.getCurrentPosition()-25);
+                arm.setPower(0.5);
+            }
+            if (gamepad1.dpad_right){
+                arm.setTargetPosition(arm.getCurrentPosition()+25);
+                arm.setPower(0.5);
+            }
             if(gamepad1.left_bumper){
                 lift1.setTargetPosition(lift1.getCurrentPosition()-50);
                 lift2.setTargetPosition(lift2.getCurrentPosition()-50);
@@ -206,8 +157,6 @@ public class solo extends LinearOpMode {
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
-            lastLoopTime = runtime.milliseconds();
-            lastError = error;
 
 
 
