@@ -30,6 +30,7 @@
 //    private DcMotor br = null;
 //    private DcMotor lift1 = null;
 //    private DcMotor lift2 = null;
+//    private DcMotor arm = null;
 //    private ElapsedTime runtime = new ElapsedTime();
 //
 //    ColorSensor sensorColor;
@@ -95,7 +96,8 @@
 //        br = hardwareMap.get(DcMotor.class, "br");
 //        lift1 = hardwareMap.get(DcMotor.class, "lift1");
 //        lift2 = hardwareMap.get(DcMotor.class, "lift2");
-//        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2);
+//        arm = hardwareMap.get(DcMotor.class, "arm");
+//        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
 //
 //        verticalLeft = hardwareMap.dcMotor.get("fl");
 //        verticalRight = hardwareMap.dcMotor.get("br");
@@ -185,5 +187,43 @@
 //            bl.setPower(r + turn);
 //            br.setPower(l - turn);
 //        }
+//    }
+//    public void stay(double targetX, double targetY, double targetOrientation) {
+//        double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
+//        double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
+//        double x = 0.075 * distanceX;
+//        double y = 0.075 * distanceY;
+//        double turn = 0.035 * (update.h() - targetOrientation);
+//        double theta = Math.toRadians(update.h());
+//
+//        if (x > 0.6) {
+//            x = 0.6;
+//        }
+//        else if (x < -0.6) {
+//            x = -0.6;
+//        }
+//        else x = x;
+//        if (y > 0.6) {
+//            y = 0.6;
+//        }
+//        else if (y < -0.6) {
+//            y = -0.6;
+//        }
+//        else y = y;
+//        if (turn > 0.3) {
+//            turn = 0.3;
+//        }
+//        else if (turn < -0.3) {
+//            turn = -0.3;
+//        }
+//        else turn = turn;
+//
+//        double l = y * Math.sin(theta + (Math.PI/4)) - x * Math.sin(theta - (Math.PI/4));
+//        double r = y * Math.cos(theta + (Math.PI/4)) - x * Math.cos(theta - (Math.PI/4));
+//
+//        fl.setPower(l + turn);
+//        fr.setPower(r - turn);
+//        bl.setPower(r + turn);
+//        br.setPower(l - turn);
 //    }
 //}
