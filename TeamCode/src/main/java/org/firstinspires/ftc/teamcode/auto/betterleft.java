@@ -33,6 +33,9 @@ public class betterleft extends LinearOpMode {
     private DcMotor arm = null;
     private ElapsedTime runtime = new ElapsedTime();
 
+    Servo lclaw;
+    Servo rclaw;
+
     ColorSensor sensorColor;
     DistanceSensor sensorDistance;
 
@@ -105,10 +108,8 @@ public class betterleft extends LinearOpMode {
         verticalRight = hardwareMap.dcMotor.get("br");
         horizontal = hardwareMap.dcMotor.get("fr");
 
-        Servo larm = hardwareMap.get(Servo.class, "larm");
-        Servo rarm = hardwareMap.get(Servo.class, "rarm");
-        Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
-        Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
+        lclaw = hardwareMap.get(Servo.class, "lclaw");
+        rclaw = hardwareMap.get(Servo.class, "rclaw");
 
         sensorColor = hardwareMap.get(ColorSensor.class, "color1");
 
@@ -134,7 +135,6 @@ public class betterleft extends LinearOpMode {
         update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
         Thread positionThread = new Thread(update);
         positionThread.start();
-        double heading = getAngle();
         double color = 0;
         resetRuntime();
         moveTo(6, -6, 0, 3);
@@ -227,6 +227,15 @@ public class betterleft extends LinearOpMode {
 
     public void alignwithpole() {
         stay(0, -55, -45);
+    }
+
+    public void clawOpen() {
+        lclaw.setPosition(0.25);
+        rclaw.setPosition(0.75);
+    }
+    public void clawClose() {
+        lclaw.setPosition(0.5);
+        rclaw.setPosition(0.5);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {

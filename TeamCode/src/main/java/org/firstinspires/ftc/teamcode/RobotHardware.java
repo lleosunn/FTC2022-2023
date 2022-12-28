@@ -55,17 +55,10 @@ public class RobotHardware {
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        arm.setDirection(DcMotorSimple.Direction.FORWARD);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setDirection(DcMotorSimple.Direction.REVERSE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void stop() {
-        fl.setPower(0);
-        fr.setPower(0);
-        bl.setPower(0);
-        br.setPower(0);
-    }
     public void setLift(int height, double power){
         lift1.setTargetPosition(height);
         lift2.setTargetPosition(height);
@@ -73,6 +66,11 @@ public class RobotHardware {
         lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift1.setPower(power);
         lift2.setPower(power);
+    }
+    public void setArm(int angle, double power) {
+        arm.setTargetPosition(angle);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(power);
     }
 
 
