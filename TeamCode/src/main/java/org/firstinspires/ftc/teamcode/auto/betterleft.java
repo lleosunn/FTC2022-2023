@@ -32,7 +32,6 @@ public class betterleft extends LinearOpMode {
     private DcMotor lift2 = null;
     private DcMotor arm = null;
     private ElapsedTime runtime = new ElapsedTime();
-
     Servo lclaw;
     Servo rclaw;
 
@@ -93,7 +92,7 @@ public class betterleft extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        imuinit();
+
 
         fl = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
@@ -126,19 +125,33 @@ public class betterleft extends LinearOpMode {
 
         robot.innitHardwareMap();
 
+        imuinit();
+
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.addData("angle", getAngle());
         telemetry.update();
 
         waitForStart();
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
         Thread positionThread = new Thread(update);
         positionThread.start();
         double color = 0;
+
+        int[] armHeight = {400, 325, 250, 175, 100};
+
         resetRuntime();
+
+        clawClose();
+        robot.setArm(30, 0.4);
+        robot.setLift(200, 1);
         moveTo(6, -6, 0, 3);
-        moveTo(6, -36, 0, 2);
+        robot.setArm(600, 0.4);
+        moveTo(5, -36, 0, 3);
 
         if (sensorColor.red() > sensorColor.blue()) { // Detect Red
             if (sensorColor.red() > sensorColor.green()) {
@@ -156,10 +169,17 @@ public class betterleft extends LinearOpMode {
                 color = 3;
             }
         }
+        robot.setLift(800, 1);
+        moveTo(-1, -45, 0, 3);
+        runtime.reset();
+        while (runtime.seconds() < 1) {
+            stay(-1, -56, -45);
+        }
+        robot.setLift(700, 1);
 
         runtime.reset();
-        while (runtime.seconds() < 1.5) {
-            alignwithpole();
+        while (runtime.seconds() < 0.2) {
+            clawOpen();
         }
 
         //start of 5 cycles
@@ -167,30 +187,58 @@ public class betterleft extends LinearOpMode {
             alignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 1.4) {
-                movetoconestack();
+            while (runtime.seconds() < 0.2) {
+                clawClose();
+                robot.setLift(armHeight[i], 0.5);
+                robot.setArm(2, 0.3);
             }
+
+            runtime.reset();
+            while (runtime.seconds() < 1.2) {
+                movetoconestack();
+                clawOpen();
+            }
+
+            runtime.reset();
+            while (runtime.seconds() < 0.2) {
+                clawClose();
+            }
+
+            robot.setLift(900, 1);
+            robot.setArm(600, 0.4);
 
             movetopole();
 
             runtime.reset();
-            while (runtime.seconds() < 1.4) {
+            while (runtime.seconds() < 0.9) {
                 alignwithpole();
             }
+
+            runtime.reset();
+            while (runtime.seconds() < 0.25) {
+                robot.setLift(700, 1);
+            }
+            clawOpen();
+
         }
+
 
         //parking
         moveTo(0, -48, -90, 2);
+        clawClose();
+        robot.setLift(0, 0.5);
+        robot.setArm(0, 0.3);
 
         if (color == 1){
-            moveTo(-23, -48, -90, 2);
+            moveTo(30, -48, -90, 1);
         }
         else if (color == 2) {
-            moveTo(0, -48, -90, 2);
+            moveTo(6, -48, -90, 1);
         }
         else {
-            moveTo(25, -48, -90, 2);
+            moveTo(-22, -48, -90, 1);
         }
+
 
         stop();
 
@@ -214,21 +262,20 @@ public class betterleft extends LinearOpMode {
     }
 
     public void alignwithconestack() {
-        moveTo(12, -50, -90, 2);
+        moveTo(10, -46, -90, 5);
     }
 
     public void movetoconestack() {
-        stay(27, -48, -90);
+        stay(31, -48, -90);
     }
 
     public void movetopole() {
-        moveTo(10, -48, -90, 2);
+        moveTo(14, -48, -90, 3);
     }
 
     public void alignwithpole() {
-        stay(0, -55, -45);
+        stay(-1, -53, -45);
     }
-
     public void clawOpen() {
         lclaw.setPosition(0.25);
         rclaw.setPosition(0.75);

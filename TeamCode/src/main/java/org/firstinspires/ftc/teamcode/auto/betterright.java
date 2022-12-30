@@ -92,7 +92,7 @@ public class betterright extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        imuinit();
+
 
         fl = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
@@ -125,6 +125,8 @@ public class betterright extends LinearOpMode {
 
         robot.innitHardwareMap();
 
+        imuinit();
+
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.addData("angle", getAngle());
         telemetry.update();
@@ -148,7 +150,7 @@ public class betterright extends LinearOpMode {
         robot.setArm(30, 0.4);
         robot.setLift(200, 1);
         moveTo(-6, -6, 0, 3);
-        robot.setArm(575, 0.4);
+        robot.setArm(600, 0.4);
         moveTo(-5, -36, 0, 3);
 
         if (sensorColor.red() > sensorColor.blue()) { // Detect Red
@@ -176,7 +178,7 @@ public class betterright extends LinearOpMode {
         robot.setLift(700, 1);
 
         runtime.reset();
-        while (runtime.seconds() < 0.25) {
+        while (runtime.seconds() < 0.2) {
             clawOpen();
         }
 
@@ -185,10 +187,10 @@ public class betterright extends LinearOpMode {
             alignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 0.25) {
+            while (runtime.seconds() < 0.2) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(0, 0.3);
+                robot.setArm(5, 0.3);
             }
 
             runtime.reset();
@@ -198,12 +200,12 @@ public class betterright extends LinearOpMode {
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.25) {
+            while (runtime.seconds() < 0.2) {
                 clawClose();
             }
 
             robot.setLift(900, 1);
-            robot.setArm(575, 0.4);
+            robot.setArm(600, 0.4);
 
             movetopole();
 
@@ -228,13 +230,13 @@ public class betterright extends LinearOpMode {
         robot.setArm(0, 0.3);
 
         if (color == 1){
-            moveTo(23, -48, 90, 2);
+            moveTo(22, -48, 90, 1);
         }
         else if (color == 2) {
-            moveTo(0, -48, 90, 2);
+            moveTo(-6, -48, 90, 1);
         }
         else {
-            moveTo(-25, -48, 90, 2);
+            moveTo(-30, -48, 90, 1);
         }
 
 
@@ -260,11 +262,11 @@ public class betterright extends LinearOpMode {
     }
 
     public void alignwithconestack() {
-        moveTo(-12, -48, 90, 3);
+        moveTo(-10, -46, 90, 5);
     }
 
     public void movetoconestack() {
-        stay(-30, -48, 90);
+        stay(-31, -48, 90);
     }
 
     public void movetopole() {
