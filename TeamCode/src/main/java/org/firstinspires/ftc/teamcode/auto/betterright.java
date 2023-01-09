@@ -90,9 +90,7 @@ public class betterright extends LinearOpMode {
 
 
     @Override
-    public void runOpMode() {
-
-
+    public void runOpMode() throws java.lang.InterruptedException {
 
         fl = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
@@ -149,9 +147,9 @@ public class betterright extends LinearOpMode {
         clawClose();
         robot.setArm(30, 0.4);
         robot.setLift(200, 1);
-        moveTo(-6, -6, 0, 3);
-        robot.setArm(600, 0.4);
-        moveTo(-5, -36, 0, 3);
+        moveTo(-7, -7, 0, 4);
+        robot.setArm(590, 0.4);
+        moveTo(-5, -40, 0, 3);
 
         if (sensorColor.red() > sensorColor.blue()) { // Detect Red
             if (sensorColor.red() > sensorColor.green()) {
@@ -169,7 +167,7 @@ public class betterright extends LinearOpMode {
                 color = 3;
             }
         }
-        robot.setLift(800, 1);
+        robot.setLift(900, 1);
         moveTo(1, -54, 45, 3);
         runtime.reset();
         while (runtime.seconds() < 0.5) {
@@ -190,7 +188,7 @@ public class betterright extends LinearOpMode {
             while (runtime.seconds() < 0.2) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(5, 0.3);
+                robot.setArm(7, 0.3);
             }
 
             runtime.reset();
@@ -205,7 +203,7 @@ public class betterright extends LinearOpMode {
             }
 
             robot.setLift(900, 1);
-            robot.setArm(600, 0.4);
+            robot.setArm(590, 0.4);
 
             movetopole();
 
@@ -238,26 +236,8 @@ public class betterright extends LinearOpMode {
         else {
             moveTo(-30, -48, 90, 1);
         }
-
-
+        update.stop();
         stop();
-
-        while (opModeIsActive()) {
-
-            update.globalCoordinatePositionUpdate();
-            telemetry.addData("X Position", update.x() / COUNTS_PER_INCH);
-            telemetry.addData("Y Position", update.y() / COUNTS_PER_INCH);
-            telemetry.addData("Orientation (Degrees)", update.h());
-            telemetry.addData("imu (degrees)", getAngle());
-            telemetry.addData("time", getRuntime());
-            telemetry.update();
-
-            Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
-                    (int) (sensorColor.green() * SCALE_FACTOR),
-                    (int) (sensorColor.blue() * SCALE_FACTOR),
-                    hsvValues);
-
-        }
 
     }
 
@@ -368,6 +348,10 @@ public class betterright extends LinearOpMode {
         fr.setPower(r - turn);
         bl.setPower(r + turn);
         br.setPower(l - turn);
+
+        if(isStopRequested()) {
+            update.stop();
+        }
     }
 
 

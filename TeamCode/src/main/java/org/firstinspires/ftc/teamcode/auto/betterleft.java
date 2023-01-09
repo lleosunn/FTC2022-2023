@@ -149,8 +149,8 @@ public class betterleft extends LinearOpMode {
         clawClose();
         robot.setArm(30, 0.4);
         robot.setLift(200, 1);
-        moveTo(6, -6, 0, 3);
-        robot.setArm(600, 0.4);
+        moveTo(7, -7, 0, 4);
+        robot.setArm(580, 0.4);
         moveTo(5, -36, 0, 3);
 
         if (sensorColor.red() > sensorColor.blue()) { // Detect Red
@@ -169,7 +169,7 @@ public class betterleft extends LinearOpMode {
                 color = 3;
             }
         }
-        robot.setLift(800, 1);
+        robot.setLift(900, 1);
         moveTo(-1, -45, 0, 3);
         runtime.reset();
         while (runtime.seconds() < 1) {
@@ -187,38 +187,42 @@ public class betterleft extends LinearOpMode {
             alignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 0.2) {
+            while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
                 robot.setArm(2, 0.3);
             }
 
             runtime.reset();
-            while (runtime.seconds() < 1.2) {
+            while (runtime.seconds() < 1.2 && opModeIsActive()) {
                 movetoconestack();
                 clawOpen();
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.2) {
+            while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 clawClose();
             }
 
             robot.setLift(900, 1);
-            robot.setArm(600, 0.4);
+            robot.setArm(580, 0.4);
 
             movetopole();
 
             runtime.reset();
-            while (runtime.seconds() < 0.9) {
+            while (runtime.seconds() < 0.9 && opModeIsActive()) {
                 alignwithpole();
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.25) {
+            while (runtime.seconds() < 0.25 && opModeIsActive()) {
                 robot.setLift(700, 1);
             }
-            clawOpen();
+
+            runtime.reset();
+            while (runtime.seconds() < 0.1 && opModeIsActive()) {
+                clawOpen();
+            }
 
         }
 
@@ -230,39 +234,21 @@ public class betterleft extends LinearOpMode {
         robot.setArm(0, 0.3);
 
         if (color == 1){
-            moveTo(30, -48, -90, 1);
+            moveTo(30, -48, -90, 2);
         }
         else if (color == 2) {
-            moveTo(6, -48, -90, 1);
+            moveTo(6, -48, -90, 2);
         }
         else {
-            moveTo(-22, -48, -90, 1);
+            moveTo(-22, -48, -90, 2);
         }
+//        imu.close();
 
-
-        stop();
-
-        while (opModeIsActive()) {
-
-            update.globalCoordinatePositionUpdate();
-            telemetry.addData("X Position", update.x() / COUNTS_PER_INCH);
-            telemetry.addData("Y Position", update.y() / COUNTS_PER_INCH);
-            telemetry.addData("Orientation (Degrees)", update.h());
-            telemetry.addData("imu (degrees)", getAngle());
-            telemetry.addData("time", getRuntime());
-            telemetry.update();
-
-            Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
-                    (int) (sensorColor.green() * SCALE_FACTOR),
-                    (int) (sensorColor.blue() * SCALE_FACTOR),
-                    hsvValues);
-
-        }
 
     }
 
     public void alignwithconestack() {
-        moveTo(10, -46, -90, 5);
+        moveTo(10, -49, -90, 5);
     }
 
     public void movetoconestack() {
@@ -270,11 +256,11 @@ public class betterleft extends LinearOpMode {
     }
 
     public void movetopole() {
-        moveTo(14, -48, -90, 3);
+        moveTo(12, -48, -90, 3);
     }
 
     public void alignwithpole() {
-        stay(-1, -53, -45);
+        stay(-3, -53, -45);
     }
     public void clawOpen() {
         lclaw.setPosition(0.25);

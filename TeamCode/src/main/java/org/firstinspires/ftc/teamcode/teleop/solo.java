@@ -41,8 +41,6 @@ public class solo extends LinearOpMode {
         lift2 = hardwareMap.get(DcMotor.class, "lift2");
         arm = hardwareMap.get(DcMotor.class, "arm");
 
-        Servo larm = hardwareMap.get(Servo.class, "larm");
-        Servo rarm = hardwareMap.get(Servo.class, "rarm");
         Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
         Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
 
@@ -63,6 +61,10 @@ public class solo extends LinearOpMode {
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
+
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         runtime.reset();
 
         while (opModeIsActive()) {
@@ -81,8 +83,6 @@ public class solo extends LinearOpMode {
             bl.setPower(modifier*(y - x + turn));
             br.setPower(modifier*(y + x - turn));
 
-
-            runtime.milliseconds();
             if (gamepad1.a) { //deposit position
                 arm.setTargetPosition(600);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -99,12 +99,10 @@ public class solo extends LinearOpMode {
             }
             if (gamepad1.right_trigger > 0){ //claw close
                 lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
-            }
+                rclaw.setPosition(0.5);            }
             if (gamepad1.left_trigger > 0){ //claw open
                 lclaw.setPosition(0.25);
-                rclaw.setPosition(0.75);
-            }
+                rclaw.setPosition(0.75);            }
 
             if(gamepad1.dpad_up) {
                 lift1.setTargetPosition(1000);
@@ -119,8 +117,8 @@ public class solo extends LinearOpMode {
                 lift2.setTargetPosition(0);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift1.setPower(0.3);
-                lift2.setPower(0.3);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
             }
             if(gamepad1.y) {
                 lift1.setTargetPosition(0);
