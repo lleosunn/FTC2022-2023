@@ -24,7 +24,11 @@ import android.view.View;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @Autonomous
-public class betterright extends LinearOpMode {
+public class FieldCentricPIDTest extends LinearOpMode {
+
+    private PIDController movePID;
+    public static double p = 0.3, i = 0, d = 0.00000001;
+    public static double maxPower = 0.3;
 
     private DcMotor fl = null;
     private DcMotor fr = null;
@@ -94,6 +98,8 @@ public class betterright extends LinearOpMode {
     @Override
     public void runOpMode() throws java.lang.InterruptedException {
 
+        movePID = new PIDController(p, i, d);
+
         fl = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
@@ -128,217 +134,69 @@ public class betterright extends LinearOpMode {
         imuinit();
 
         telemetry.addData(">", "Press Play to start op mode");
-        telemetry.addData("angle", getAngle());
         telemetry.update();
 
-        waitForStart();
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        waitForStart();
 
         update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
         Thread positionThread = new Thread(update);
         positionThread.start();
-        double color = 0;
-
-        int[] armHeight = {400, 325, 250, 175, 100};
-
-        resetRuntime();
-
-        clawClose();
-        robot.setArm(30, 0.4);
-        robot.setLift(200, 1);
-        moveTo(-7, -7, 0, 4);
-        robot.setArm(590, 0.4);
-        moveTo(-5, -40, 0, 3);
-
-        if (sensorColor.red() > sensorColor.blue()) { // Detect Red
-            if (sensorColor.red() > sensorColor.green()) {
-                telemetry.addLine("RED (A)");
-                color = 1;
-            }
-        } else if (sensorColor.blue() > sensorColor.red()) { // Detect Blue
-            if (sensorColor.blue() > sensorColor.green()) {
-                telemetry.addLine("BLUE (B)");
-                color = 2;
-            }
-        } else if (sensorColor.green() > sensorColor.red()) { // Detect Green
-            if (sensorColor.green() > sensorColor.blue()) {
-                telemetry.addLine("GREEN (C)");
-                color = 3;
-            }
-        }
-        robot.setLift(880, 1);
-        moveTo(1, -54, 45, 3);
-        runtime.reset();
-        while (runtime.seconds() < 0.5 && opModeIsActive()) {
-            stay(1, -56, 45);
-        }
-        robot.setLift(700, 1);
 
         runtime.reset();
-        while (runtime.seconds() < 0.2 && opModeIsActive()) {
-            clawOpen();
+        while (runtime.seconds() < 5 && opModeIsActive()) {
+            stay(25, 25, 90);
         }
+        runtime.reset();
+        while (runtime.seconds() < 5 && opModeIsActive()) {
+            stay(0, 45, 180);
+        }
+//        runtime.reset();
+//        while (runtime.seconds() < 5 && opModeIsActive()) {
+//            stay(0, 0, 0);
+//        }
 
-        //start of 5 cycles
-        for (int i = 0; i < 5; i++){
-            alignwithconestack();
-
-            runtime.reset();
-            while (runtime.seconds() < 0.2 && opModeIsActive()) {
-                clawClose();
-                robot.setLift(armHeight[i], 0.5);
-                robot.setArm(10, 0.3);
-            }
-
-            runtime.reset();
-            while (runtime.seconds() < 1.2 && opModeIsActive()) {
-                movetoconestack();
-                clawOpen();
-            }
-
-            runtime.reset();
-            while (runtime.seconds() < 0.2 && opModeIsActive()) {
-                clawClose();
-            }
-
-            robot.setLift(900, 1);
-            robot.setArm(590, 0.4);
-
-            movetopole();
-
-            runtime.reset();
-            while (runtime.seconds() < 0.9 && opModeIsActive()) {
-                alignwithpole();
-            }
-
-            runtime.reset();
-            while (runtime.seconds() < 0.25 && opModeIsActive()) {
-                robot.setLift(700, 1);
-            }
-            clawOpen();
+        while(opModeIsActive()) {
+            telemetry.addData("x", update.x() / COUNTS_PER_INCH);
+            telemetry.addData("y", update.y() / COUNTS_PER_INCH);
+            telemetry.addData("h", getAngle());
+            telemetry.update();
 
         }
 
 
-        //parking
-        moveTo(0, -48, 90, 2);
-        clawClose();
-        robot.setLift(0, 0.5);
-        robot.setArm(3, 0.3);
-
-        if (color == 1){
-            moveTo(22, -48, 90, 1);
-        }
-        else if (color == 2) {
-            moveTo(-6, -48, 90, 1);
-        }
-        else {
-            moveTo(-30, -48, 90, 1);
-        }
         update.stop();
         stop();
 
     }
 
-    public void alignwithconestack() {
-        moveTo(-10, -46, 90, 5);
-    }
-
-    public void movetoconestack() {
-        stay(-32, -48, 90);
-    }
-
-    public void movetopole() {
-        moveTo(-10, -48, 90, 3);
-    }
-
-    public void alignwithpole() {
-        stay(0.5, -52.5, 45);
-    }
-    public void clawOpen() {
-        lclaw.setPosition(0.25);
-        rclaw.setPosition(0.75);
-    }
-    public void clawClose() {
-        lclaw.setPosition(0.5);
-        rclaw.setPosition(0.5);
-    }
-
-    public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
-        double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
-        double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
-        double distance = Math.hypot(distanceX, distanceY);
-
-        while(opModeIsActive() && distance > error) {
-            distance = Math.hypot(distanceX, distanceY);
-            distanceX = targetX - (update.x() / COUNTS_PER_INCH);
-            distanceY = targetY - (update.y() / COUNTS_PER_INCH);
-
-            double x = 0.075 * distanceX;
-            double y = 0.075 * distanceY;
-            double turn = 0.035 * (update.h() - targetOrientation);
-            double theta = Math.toRadians(update.h());
-
-            if (x > 0.6) {
-                x = 0.6;
-            }
-            else if (x < -0.6) {
-                x = -0.6;
-            }
-            else x = x;
-            if (y > 0.6) {
-                y = 0.6;
-            }
-            else if (y < -0.6) {
-                y = -0.6;
-            }
-            else y = y;
-            if (turn > 0.3) {
-                turn = 0.3;
-            }
-            else if (turn < -0.3) {
-                turn = -0.3;
-            }
-            else turn = turn;
-
-            double l = y * Math.sin(theta + (Math.PI/4)) - x * Math.sin(theta - (Math.PI/4));
-            double r = y * Math.cos(theta + (Math.PI/4)) - x * Math.cos(theta - (Math.PI/4));
-
-            fl.setPower(l + turn);
-            fr.setPower(r - turn);
-            bl.setPower(r + turn);
-            br.setPower(l - turn);
-
-            if(isStopRequested()) {
-                update.stop();
-            }
-        }
-    }
     public void stay(double targetX, double targetY, double targetOrientation) {
-        double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
-        double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
-        double x = 0.1 * distanceX;
-        double y = 0.1 * distanceY;
+        movePID.setPID(p, i ,d);
+        double currentX = update.x() / COUNTS_PER_INCH;
+        double currentY = update.y() / COUNTS_PER_INCH;
+        double x = movePID.calculate(currentX, targetX);
+        double y = movePID.calculate(currentY, targetY);
+
         double turn = 0.035 * (update.h() - targetOrientation);
         double theta = Math.toRadians(update.h());
 
-        if (x > 0.6) {
-            x = 0.6;
+        if (x > maxPower) {
+            x = maxPower;
         }
-        else if (x < -0.6) {
-            x = -0.6;
+        else if (x < -maxPower) {
+            x = -maxPower;
         }
         else x = x;
-        if (y > 0.6) {
-            y = 0.6;
+        if (y > maxPower) {
+            y = maxPower;
         }
-        else if (y < -0.6) {
-            y = -0.6;
+        else if (y < -maxPower) {
+            y = -maxPower;
         }
         else y = y;
+        if (turn > 0.3) {
+            turn = 0.3;
+        }
         if (turn > 0.3) {
             turn = 0.3;
         }

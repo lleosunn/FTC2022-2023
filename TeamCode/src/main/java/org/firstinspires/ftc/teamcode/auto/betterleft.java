@@ -172,13 +172,13 @@ public class betterleft extends LinearOpMode {
         robot.setLift(900, 1);
         moveTo(-1, -45, 0, 3);
         runtime.reset();
-        while (runtime.seconds() < 1) {
+        while (runtime.seconds() < 1 && opModeIsActive()) {
             stay(-1, -56, -45);
         }
         robot.setLift(700, 1);
 
         runtime.reset();
-        while (runtime.seconds() < 0.2) {
+        while (runtime.seconds() < 0.2 && opModeIsActive()) {
             clawOpen();
         }
 
