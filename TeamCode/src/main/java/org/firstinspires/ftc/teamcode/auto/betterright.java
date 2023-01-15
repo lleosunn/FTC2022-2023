@@ -167,7 +167,7 @@ public class betterright extends LinearOpMode {
                 color = 3;
             }
         }
-        robot.setLift(900, 1);
+        robot.setLift(880, 1);
         moveTo(1, -54, 45, 3);
         runtime.reset();
         while (runtime.seconds() < 0.5) {
@@ -188,7 +188,7 @@ public class betterright extends LinearOpMode {
             while (runtime.seconds() < 0.2) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(7, 0.3);
+                robot.setArm(10, 0.3);
             }
 
             runtime.reset();
@@ -225,7 +225,7 @@ public class betterright extends LinearOpMode {
         moveTo(0, -48, 90, 2);
         clawClose();
         robot.setLift(0, 0.5);
-        robot.setArm(0, 0.3);
+        robot.setArm(3, 0.3);
 
         if (color == 1){
             moveTo(22, -48, 90, 1);
@@ -246,7 +246,7 @@ public class betterright extends LinearOpMode {
     }
 
     public void movetoconestack() {
-        stay(-31, -48, 90);
+        stay(-32, -48, 90);
     }
 
     public void movetopole() {
@@ -254,7 +254,7 @@ public class betterright extends LinearOpMode {
     }
 
     public void alignwithpole() {
-        stay(1, -53, 45);
+        stay(0.5, -52.5, 45);
     }
     public void clawOpen() {
         lclaw.setPosition(0.25);
@@ -309,6 +309,10 @@ public class betterright extends LinearOpMode {
             fr.setPower(r - turn);
             bl.setPower(r + turn);
             br.setPower(l - turn);
+
+            if(isStopRequested()) {
+                update.stop();
+            }
         }
     }
     public void stay(double targetX, double targetY, double targetOrientation) {

@@ -190,7 +190,7 @@ public class betterleft extends LinearOpMode {
             while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(2, 0.3);
+                robot.setArm(10, 0.3);
             }
 
             runtime.reset();
@@ -205,7 +205,7 @@ public class betterleft extends LinearOpMode {
             }
 
             robot.setLift(900, 1);
-            robot.setArm(580, 0.4);
+            robot.setArm(590, 0.4);
 
             movetopole();
 
@@ -231,7 +231,7 @@ public class betterleft extends LinearOpMode {
         moveTo(0, -48, -90, 2);
         clawClose();
         robot.setLift(0, 0.5);
-        robot.setArm(0, 0.3);
+        robot.setArm(3, 0.3);
 
         if (color == 1){
             moveTo(30, -48, -90, 2);
@@ -242,7 +242,8 @@ public class betterleft extends LinearOpMode {
         else {
             moveTo(-22, -48, -90, 2);
         }
-//        imu.close();
+        update.stop();
+        stop();
 
 
     }
@@ -315,6 +316,10 @@ public class betterleft extends LinearOpMode {
             fr.setPower(r - turn);
             bl.setPower(r + turn);
             br.setPower(l - turn);
+
+            if(isStopRequested()) {
+                update.stop();
+            }
         }
     }
     public void stay(double targetX, double targetY, double targetOrientation) {
@@ -354,6 +359,10 @@ public class betterleft extends LinearOpMode {
         fr.setPower(r - turn);
         bl.setPower(r + turn);
         br.setPower(l - turn);
+
+        if(isStopRequested()) {
+            update.stop();
+        }
     }
 
 

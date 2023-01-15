@@ -42,6 +42,9 @@ public class duo extends LinearOpMode {
 
         Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
         Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
+        Servo odo1 = hardwareMap.get(Servo.class, "odo1");
+        Servo odo2 = hardwareMap.get(Servo.class, "odo2");
+
 
         fl.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.FORWARD);
@@ -119,12 +122,6 @@ public class duo extends LinearOpMode {
                 arm.setPower(0.3);
                 lclaw.setPosition(0.5);
                 rclaw.setPosition(0.5);
-                lift1.setTargetPosition(0);
-                lift2.setTargetPosition(0);
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift1.setPower(0.5);
-                lift2.setPower(0.5);
             }
             if (gamepad2.right_trigger > 0){ //claw close
                 lclaw.setPosition(0.5);
@@ -136,9 +133,6 @@ public class duo extends LinearOpMode {
             }
 
             if(gamepad2.dpad_up) { // high
-                arm.setTargetPosition(600);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.4);
                 lclaw.setPosition(0.5);
                 rclaw.setPosition(0.5);
                 lift1.setTargetPosition(900);
@@ -149,9 +143,6 @@ public class duo extends LinearOpMode {
                 lift2.setPower(1);
             }
             if(gamepad2.dpad_right) { // Medium
-                arm.setTargetPosition(600);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.4);
                 lclaw.setPosition(0.5);
                 rclaw.setPosition(0.5);
                 lift1.setTargetPosition(300);
@@ -199,6 +190,14 @@ public class duo extends LinearOpMode {
             if (gamepad2.right_stick_x > 0.5){
                 arm.setTargetPosition(arm.getCurrentPosition()+25);
                 arm.setPower(0.5);
+            }
+            if(gamepad1.a){
+                odo1.setPosition(0.5);
+                odo2.setPosition(0.5);
+            }
+            if(gamepad1.b){
+                odo1.setPosition(1);
+                odo2.setPosition(0);
             }
 
 
