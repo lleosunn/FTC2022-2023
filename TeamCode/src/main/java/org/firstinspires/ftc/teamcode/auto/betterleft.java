@@ -190,7 +190,7 @@ public class betterleft extends LinearOpMode {
             while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(10, 0.3);
+                robot.setArm(15, 0.3);
             }
 
             runtime.reset();

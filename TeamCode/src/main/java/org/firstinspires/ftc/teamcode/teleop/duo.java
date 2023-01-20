@@ -128,8 +128,8 @@ public class duo extends LinearOpMode {
                 rclaw.setPosition(0.5);
             }
             if (gamepad2.left_trigger > 0){ //claw open
-                lclaw.setPosition(0.25);
-                rclaw.setPosition(0.75);
+                lclaw.setPosition(0.15);
+                rclaw.setPosition(0.85);
             }
 
             if(gamepad2.dpad_up) { // high

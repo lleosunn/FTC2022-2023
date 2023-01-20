@@ -24,47 +24,6 @@ public class wood extends LinearOpMode {
     private DcMotor bl = null;
     private DcMotor br = null;
 
-    BNO055IMU imu;
-    BNO055IMU.Parameters parameters;
-    Orientation lastAngles = new Orientation();
-    double globalAngle;
-
-    public void imuinit() {
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        parameters = new BNO055IMU.Parameters();
-        parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled = false;
-        imu.initialize(parameters);
-
-        telemetry.addData("Gyro Mode", "calibrating...");
-        telemetry.update();
-
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
-        telemetry.addData("Gyro Mode", "ready");
-        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        telemetry.update();
-    }
-    private void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        globalAngle = 0;
-    }
-    private double getAngle() {
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-        globalAngle += deltaAngle;
-        lastAngles = angles;
-        return globalAngle;
-    }
-
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -74,6 +33,7 @@ public class wood extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
+        Servo claw = hardwareMap.get(Servo.class, "claw");
 
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -85,39 +45,27 @@ public class wood extends LinearOpMode {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        imuinit();
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-            telemetry.addData("Angle", getAngle());
-            telemetry.update();
 
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
-            double theta = Math.toRadians(getAngle());
-            double modifier = 0.5;
+            double turn = 0.5 * gamepad1.right_stick_x;
+            double modifier = 1;
 
-            if(gamepad1.right_stick_button) {
-                resetAngle();
+            fl.setPower(modifier*(y + x + turn));
+            fr.setPower(modifier*(y - x - turn));
+            bl.setPower(modifier*(y - x + turn));
+            br.setPower(modifier*(y + x - turn));
+
+            if (gamepad1.right_trigger > 0.5) {
+                claw.setPosition(0.43);
             }
-
-//            fl.setPower(modifier*(y + x + turn));
-//            fr.setPower(modifier*(y - x - turn));
-//            bl.setPower(modifier*1.2*(y - x + turn));
-//            br.setPower(modifier*(y + x - turn));
-
-            double l = y * Math.sin(theta + (Math.PI/4)) - x * Math.sin(theta - (Math.PI/4));
-            double r = y * Math.cos(theta + (Math.PI/4)) - x * Math.cos(theta - (Math.PI/4));
-
-            fl.setPower(l + turn);
-            fr.setPower(r - turn);
-            bl.setPower(r + turn);
-            br.setPower(l - turn);
-
-
-
+            if (gamepad1.left_trigger > 0.5) {
+                claw.setPosition(0.6);
+            }
 
         }
     }

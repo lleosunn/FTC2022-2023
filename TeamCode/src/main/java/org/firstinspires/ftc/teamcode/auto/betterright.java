@@ -190,7 +190,7 @@ public class betterright extends LinearOpMode {
             while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 clawClose();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(10, 0.3);
+                robot.setArm(15, 0.3);
             }
 
             runtime.reset();
@@ -248,7 +248,7 @@ public class betterright extends LinearOpMode {
     }
 
     public void movetoconestack() {
-        stay(-32, -48, 90);
+        stay(-32, -50, 90);
     }
 
     public void movetopole() {

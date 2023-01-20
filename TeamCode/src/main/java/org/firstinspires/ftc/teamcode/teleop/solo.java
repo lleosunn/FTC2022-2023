@@ -44,10 +44,10 @@ public class solo extends LinearOpMode {
         Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
         Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
 
-        fl.setDirection(DcMotor.Direction.REVERSE);
-        bl.setDirection(DcMotor.Direction.REVERSE);
-        fr.setDirection(DcMotor.Direction.FORWARD);
-        br.setDirection(DcMotor.Direction.FORWARD);
+        fl.setDirection(DcMotor.Direction.FORWARD);
+        bl.setDirection(DcMotor.Direction.FORWARD);
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.REVERSE);
         lift1.setDirection(DcMotor.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
         arm.setDirection(DcMotor.Direction.REVERSE);
@@ -75,51 +75,14 @@ public class solo extends LinearOpMode {
 
             double x = gamepad1.left_stick_x;
             double y = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
-            double modifier = 1;
+            double turn = -gamepad1.right_stick_x;
+            double modifier = 0.3;
 
             fl.setPower((modifier*1.15)*(y + x + turn));
             fr.setPower(modifier*(y - x - turn));
             bl.setPower(modifier*(y - x + turn));
             br.setPower(modifier*(y + x - turn));
 
-            if (gamepad1.a) { //deposit position
-                arm.setTargetPosition(600);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.4);
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
-            }
-            if (gamepad1.b) { //intake position
-                arm.setTargetPosition(35);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.3);
-                lclaw.setPosition(0.55);
-                rclaw.setPosition(0.45);
-            }
-            if (gamepad1.right_trigger > 0){ //claw close
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);            }
-            if (gamepad1.left_trigger > 0){ //claw open
-                lclaw.setPosition(0.25);
-                rclaw.setPosition(0.75);            }
-
-            if(gamepad1.dpad_up) {
-                lift1.setTargetPosition(1000);
-                lift2.setTargetPosition(1000);
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift1.setPower(1);
-                lift2.setPower(1);
-            }
-            if(gamepad1.dpad_down) {
-                lift1.setTargetPosition(0);
-                lift2.setTargetPosition(0);
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift1.setPower(0.5);
-                lift2.setPower(0.5);
-            }
             if(gamepad1.y) {
                 lift1.setTargetPosition(0);
                 lift2.setTargetPosition(0);
@@ -135,6 +98,46 @@ public class solo extends LinearOpMode {
                 arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 arm.setPower(0);
             }
+            if (gamepad1.a) { //deposit position
+                arm.setTargetPosition(600);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.4);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
+            }
+            if (gamepad1.b) { //intake position
+                arm.setTargetPosition(38);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.3);
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
+            }
+            if (gamepad1.right_trigger > 0){ //claw close
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);            }
+            if (gamepad1.left_trigger > 0){ //claw open
+                lclaw.setPosition(0.25);
+                rclaw.setPosition(0.75);            }
+
+            if(gamepad1.dpad_up) {
+                lclaw.setPosition(0.5);
+                rclaw.setPosition(0.5);
+                lift1.setTargetPosition(900);
+                lift2.setTargetPosition(900);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift1.setPower(1);
+                lift2.setPower(1);
+            }
+            if(gamepad1.dpad_down) {
+                lift1.setTargetPosition(0);
+                lift2.setTargetPosition(0);
+                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                lift1.setPower(0.5);
+                lift2.setPower(0.5);
+            }
+
             if (gamepad1.dpad_left){
                 arm.setTargetPosition(arm.getCurrentPosition()-25);
                 arm.setPower(0.5);
