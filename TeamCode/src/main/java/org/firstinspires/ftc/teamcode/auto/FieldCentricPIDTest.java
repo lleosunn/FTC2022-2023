@@ -27,8 +27,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 public class FieldCentricPIDTest extends LinearOpMode {
 
     private PIDController movePID;
-    public static double p = 0.3, i = 0, d = 0.00000001;
-    public static double maxPower = 0.3;
+    public static double p = 0.4, i = 0, d = 0.000001;
+    public static double maxPower = 0.5;
 
     private DcMotor fl = null;
     private DcMotor fr = null;
@@ -144,26 +144,14 @@ public class FieldCentricPIDTest extends LinearOpMode {
         positionThread.start();
 
         runtime.reset();
-        while (runtime.seconds() < 5 && opModeIsActive()) {
-            stay(25, 25, 90);
-        }
-        runtime.reset();
-        while (runtime.seconds() < 5 && opModeIsActive()) {
-            stay(0, 45, 180);
-        }
-//        runtime.reset();
-//        while (runtime.seconds() < 5 && opModeIsActive()) {
-//            stay(0, 0, 0);
-//        }
-
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             telemetry.addData("x", update.x() / COUNTS_PER_INCH);
             telemetry.addData("y", update.y() / COUNTS_PER_INCH);
             telemetry.addData("h", getAngle());
             telemetry.update();
+            stay(0, 50, 0);
 
         }
-
 
         update.stop();
         stop();

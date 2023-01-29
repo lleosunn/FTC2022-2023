@@ -252,7 +252,7 @@ public class betterright extends LinearOpMode {
     }
 
     public void movetopole() {
-        moveTo(-10, -48, 90, 3);
+        moveTo(-12, -48, 90, 3);
     }
 
     public void alignwithpole() {

@@ -169,7 +169,7 @@ public class betterleft extends LinearOpMode {
                 color = 3;
             }
         }
-        robot.setLift(900, 1);
+        robot.setLift(880, 1);
         moveTo(-1, -45, 0, 3);
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
