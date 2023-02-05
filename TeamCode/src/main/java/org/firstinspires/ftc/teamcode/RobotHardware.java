@@ -13,11 +13,6 @@ public class RobotHardware {
     DcMotor lift2;
     DcMotor arm;
 
-    // odometers
-//    public DcMotor encoderLeft;
-//    public DcMotor encoderRight;
-//    public DcMotor encoderAux;
-
     public RobotHardware(DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br, DcMotor lift1, DcMotor lift2, DcMotor arm) {
         this.fl = fl;
         this.fr = fr;
@@ -51,7 +46,6 @@ public class RobotHardware {
 
         lift1.setDirection(DcMotor.Direction.REVERSE);
         lift2.setDirection(DcMotorSimple.Direction.REVERSE);
-
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

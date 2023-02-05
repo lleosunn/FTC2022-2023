@@ -27,6 +27,9 @@ public class duo extends LinearOpMode {
     private DcMotor lift2 = null;
     private DcMotor arm = null;
 
+    Servo lclaw;
+    Servo rclaw;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -40,8 +43,8 @@ public class duo extends LinearOpMode {
         lift2 = hardwareMap.get(DcMotor.class, "lift2");
         arm = hardwareMap.get(DcMotor.class, "arm");
 
-        Servo lclaw = hardwareMap.get(Servo.class, "lclaw");
-        Servo rclaw = hardwareMap.get(Servo.class, "rclaw");
+        lclaw = hardwareMap.get(Servo.class, "lclaw");
+        rclaw = hardwareMap.get(Servo.class, "rclaw");
         Servo odo1 = hardwareMap.get(Servo.class, "odo1");
         Servo odo2 = hardwareMap.get(Servo.class, "odo2");
 
@@ -113,28 +116,22 @@ public class duo extends LinearOpMode {
                 arm.setTargetPosition(600);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.4);
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
+                clawClose();
             }
             if (gamepad2.b) { //intake position
                 arm.setTargetPosition(38);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.3);
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
+                clawClose();
             }
             if (gamepad2.right_trigger > 0){ //claw close
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
+                clawClose();
             }
             if (gamepad2.left_trigger > 0){ //claw open
-                lclaw.setPosition(0.15);
-                rclaw.setPosition(0.85);
+                clawOpen();
             }
 
             if(gamepad2.dpad_up) { // high
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
                 lift1.setTargetPosition(900);
                 lift2.setTargetPosition(900);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -143,8 +140,6 @@ public class duo extends LinearOpMode {
                 lift2.setPower(1);
             }
             if(gamepad2.dpad_right) { // Medium
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
                 lift1.setTargetPosition(300);
                 lift2.setTargetPosition(300);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -156,8 +151,6 @@ public class duo extends LinearOpMode {
                 arm.setTargetPosition(280);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.4);
-                lclaw.setPosition(0.5);
-                rclaw.setPosition(0.5);
             }
             if(gamepad2.dpad_down) { //lift down
                 lift1.setTargetPosition(0);
@@ -167,10 +160,6 @@ public class duo extends LinearOpMode {
                 lift1.setPower(0.5);
                 lift2.setPower(0.5);
             }
-
-
-
-
             if(gamepad2.left_stick_y > 0.5){
                 lift1.setTargetPosition(lift1.getCurrentPosition()-50);
                 lift2.setTargetPosition(lift2.getCurrentPosition()-50);
@@ -202,5 +191,13 @@ public class duo extends LinearOpMode {
 
 
         }
+    }
+    public void clawOpen() {
+        lclaw.setPosition(0.25);
+        rclaw.setPosition(0.75);
+    }
+    public void clawClose() {
+        lclaw.setPosition(0.47);
+        rclaw.setPosition(0.53);
     }
 }
