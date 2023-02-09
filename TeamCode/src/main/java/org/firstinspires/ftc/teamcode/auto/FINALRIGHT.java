@@ -23,6 +23,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 @Autonomous
 public class FINALRIGHT extends LinearOpMode {
 
+    private static double maxpower = 0.8;
+
     //motors
     private DcMotor fl = null;
     private DcMotor fr = null;
@@ -157,7 +159,7 @@ public class FINALRIGHT extends LinearOpMode {
         robot.setArm(660, 0.4);
 
         //drive to signal cone
-        moveTo(-20, 0, -90, 4);
+        moveTo(-18, 0, -90, 4);
         runtime.reset();
         while (runtime.seconds() < 0.5) {
             stay(-22, 0, -90);
@@ -255,7 +257,7 @@ public class FINALRIGHT extends LinearOpMode {
             moveTo(-50, -24, 0, 2);
         }
         else if (color == 2) {
-            moveTo(-50, -6, 0, 2);
+            moveTo(-50, -2, 0, 2);
         }
         else {
             moveTo(-50, 24, 0, 2);
@@ -271,7 +273,7 @@ public class FINALRIGHT extends LinearOpMode {
     }
 
     public void movetoconestack() {
-        stay(-50, 23, 0);
+        stay(-50, 24, 0);
     }
 
     public void movetopole() {
@@ -348,18 +350,18 @@ public class FINALRIGHT extends LinearOpMode {
         double turn = 0.035 * (update.h() - targetOrientation);
         double theta = Math.toRadians(update.h());
 
-        if (x > 0.6) {
-            x = 0.6;
+        if (x > maxpower) {
+            x = maxpower;
         }
-        else if (x < -0.6) {
-            x = -0.6;
+        else if (x < -maxpower) {
+            x = -maxpower;
         }
         else x = x;
-        if (y > 0.6) {
-            y = 0.6;
+        if (y > maxpower) {
+            y = maxpower;
         }
-        else if (y < -0.6) {
-            y = -0.6;
+        else if (y < -maxpower) {
+            y = -maxpower;
         }
         else y = y;
         if (turn > 0.3) {

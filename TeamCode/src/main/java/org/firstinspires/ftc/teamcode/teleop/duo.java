@@ -181,8 +181,8 @@ public class duo extends LinearOpMode {
                 arm.setPower(0.5);
             }
             if(gamepad1.a){
-                odo1.setPosition(0.5);
-                odo2.setPosition(0.5);
+                odo1.setPosition(0.55);
+                odo2.setPosition(0.45);
             }
             if(gamepad1.b){
                 odo1.setPosition(1);
