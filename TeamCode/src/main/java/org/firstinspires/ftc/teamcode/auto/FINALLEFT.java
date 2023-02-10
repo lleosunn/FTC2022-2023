@@ -277,7 +277,7 @@ public class FINALLEFT extends LinearOpMode {
     }
 
     public void movetopole() {
-        moveTo(50, 7, 180, 3);
+        moveTo(50, 7, 180, 1.5);
     }
 
     public void alignwithpole() {
