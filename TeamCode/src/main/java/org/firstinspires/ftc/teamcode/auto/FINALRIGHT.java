@@ -159,10 +159,10 @@ public class FINALRIGHT extends LinearOpMode {
         robot.setArm(660, 0.4);
 
         //drive to signal cone
-        moveTo(-18, 0, -90, 4);
+        moveTo(-16, 0, -90, 4);
         runtime.reset();
-        while (runtime.seconds() < 0.5) {
-            stay(-22, 0, -90);
+        while (runtime.seconds() < 1) {
+            stay(-21, 0, -90);
         }
 
         //detect color
@@ -228,7 +228,7 @@ public class FINALRIGHT extends LinearOpMode {
             runtime.reset();
             while (runtime.seconds() < 0.7 && opModeIsActive()) {
                 alignwithpole();
-                robot.setArm(660, 0.4);
+                robot.setArm(650, 0.4);
             }
 
             runtime.reset();
@@ -253,11 +253,14 @@ public class FINALRIGHT extends LinearOpMode {
         robot.setLift(0, 0.5);
         robot.setArm(3, 0.3);
 
+        runtime.reset();
         if (color == 1){
             moveTo(-50, -24, 0, 2);
         }
         else if (color == 2) {
-            moveTo(-50, -2, 0, 2);
+            while (runtime.seconds() < 2) {
+                stay(-50, -2, 0);
+            }
         }
         else {
             moveTo(-50, 24, 0, 2);
@@ -273,7 +276,7 @@ public class FINALRIGHT extends LinearOpMode {
     }
 
     public void movetoconestack() {
-        stay(-50, 24, 0);
+        stay(-50, 23.5, 0);
     }
 
     public void movetopole() {
@@ -281,7 +284,7 @@ public class FINALRIGHT extends LinearOpMode {
     }
 
     public void alignwithpole() {
-        stay(-54, -4.5, -45);
+        stay(-54, -4.5, -40);
     }
     public void clawOpen() {
         lclaw.setPosition(0.25);
