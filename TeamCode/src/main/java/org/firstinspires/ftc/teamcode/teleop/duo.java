@@ -113,13 +113,13 @@ public class duo extends LinearOpMode {
             }
 
             if (gamepad2.a) { //deposit position
-                arm.setTargetPosition(600);
+                arm.setTargetPosition(650);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.4);
                 clawClose();
             }
             if (gamepad2.b) { //intake position
-                arm.setTargetPosition(38);
+                arm.setTargetPosition(10);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.3);
                 clawClose();

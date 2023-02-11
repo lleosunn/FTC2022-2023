@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 @Autonomous
 public class FINALRIGHT extends LinearOpMode {
 
-    private static double maxpower = 0.8;
+    private static double maxpower = 0.6;
 
     //motors
     private DcMotor fl = null;
@@ -184,7 +184,7 @@ public class FINALRIGHT extends LinearOpMode {
         }
 
         //drive to pole
-        robot.setLift(850, 1);
+        robot.setLift(875, 1);
         moveTo(-40, -3, -90, 3);
 
         //align with pole
@@ -208,7 +208,7 @@ public class FINALRIGHT extends LinearOpMode {
             alignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 1.6 && opModeIsActive()) {
+            while (runtime.seconds() < 1.4 && opModeIsActive()) {
                 movetoconestack();
                 robot.setLift(armHeight[i], 0.5);
                 robot.setArm(5, 0.3);
@@ -216,11 +216,11 @@ public class FINALRIGHT extends LinearOpMode {
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.2 && opModeIsActive()) {
+            while (runtime.seconds() < 0.5 && opModeIsActive()) {
                 clawClose();
             }
 
-            robot.setLift(850, 1);
+            robot.setLift(875, 1);
             robot.setArm(500, 0.4);
 
             movetopole();
