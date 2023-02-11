@@ -159,7 +159,10 @@ public class FINALRIGHT extends LinearOpMode {
         robot.setArm(660, 0.4);
 
         //drive to signal cone
-        moveTo(-16, 0, -90, 4);
+        runtime.reset();
+        while (runtime.seconds() < 1.25) {
+            stay(-16, 0, -90);
+        }
         runtime.reset();
         while (runtime.seconds() < 1) {
             stay(-21, 0, -90);
