@@ -33,6 +33,20 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
+import android.graphics.ImageFormat;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
+
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+
 @TeleOp
 public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 {
@@ -51,11 +65,13 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     double cy = 221.506;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.508;
+    double zoom = 2;
 
     int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
 
     AprilTagDetection tagOfInterest = null;
+
 
     @Override
     public void runOpMode()
@@ -66,11 +82,16 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
+
+
+
         {
             @Override
             public void onOpened()
             {
                 camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+
             }
 
             @Override
@@ -92,21 +113,41 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
             if(currentDetections.size() != 0)
             {
-                boolean tagFound = false;
+                boolean tag1Found = false;
+                boolean tag2Found = false;
+                boolean tag3Found = false;
 
                 for(AprilTagDetection tag : currentDetections)
                 {
-                    if(tag.id == 0)
+                    if(tag.id == 9)
                     {
                         tagOfInterest = tag;
-                        tagFound = true;
+                        tag1Found = true;
+                        break;
+                    }
+
+                    if(tag.id == 11){
+                        tagOfInterest = tag;
+                        tag2Found = true;
+                        break;
+                    }
+
+                    if(tag.id == 18){
+                        tagOfInterest = tag;
+                        tag3Found = true;
                         break;
                     }
                 }
 
-                if(tagFound)
+                if(tag1Found)
                 {
-                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                    telemetry.addLine("Tag 1 Located!");
+                    tagToTelemetry(tagOfInterest);
+                } else if(tag2Found) {
+                    telemetry.addLine("Tag 2 Located!");
+                    tagToTelemetry(tagOfInterest);
+                } else if(tag3Found) {
+                    telemetry.addLine("Tag 3 Located!");
                     tagToTelemetry(tagOfInterest);
                 }
                 else
