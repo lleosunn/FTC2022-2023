@@ -259,6 +259,7 @@ public class THEGOODLEFT extends LinearOpMode {
              */
         } else {
 
+            //motors
             fl = hardwareMap.get(DcMotor.class, "fl");
             fr = hardwareMap.get(DcMotor.class, "fr");
             bl = hardwareMap.get(DcMotor.class, "bl");
@@ -266,31 +267,36 @@ public class THEGOODLEFT extends LinearOpMode {
             lift1 = hardwareMap.get(DcMotor.class, "lift1");
             lift2 = hardwareMap.get(DcMotor.class, "lift2");
             arm = hardwareMap.get(DcMotor.class, "arm");
-            RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
 
+            //servos
+            lclaw = hardwareMap.get(Servo.class, "lclaw");
+            rclaw = hardwareMap.get(Servo.class, "rclaw");
+            Servo odo1 = hardwareMap.get(Servo.class, "odo1");
+            Servo odo2 = hardwareMap.get(Servo.class, "odo2");
+
+            //odometers
             verticalLeft = hardwareMap.dcMotor.get("fl");
             verticalRight = hardwareMap.dcMotor.get("br");
             horizontal = hardwareMap.dcMotor.get("fr");
 
-            lclaw = hardwareMap.get(Servo.class, "lclaw");
-            rclaw = hardwareMap.get(Servo.class, "rclaw");
-
+            //color sensor
             sensorColor = hardwareMap.get(ColorSensor.class, "color1");
-
             sensorDistance = hardwareMap.get(DistanceSensor.class, "color1");
-
             float hsvValues[] = {0F, 0F, 0F};
-
             final float values[] = hsvValues;
-
             final double SCALE_FACTOR = 255;
-
             int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
             final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
+            //robot hardware
+            RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
             robot.innitHardwareMap();
 
             imuinit();
+
+            odo1.setPosition(1);
+            odo2.setPosition(0);
+            sleep(500);
 
             telemetry.addData(">", "Press Play to start op mode");
             telemetry.addData("angle", getAngle());
@@ -301,87 +307,111 @@ public class THEGOODLEFT extends LinearOpMode {
             lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-
+            //start odometry thread
             update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
             Thread positionThread = new Thread(update);
             positionThread.start();
+
             double color = 0;
-
-            int[] armHeight = {400, 325, 250, 175, 100};
-
+            int[] armHeight = {320, 240, 160, 80, 0};
             resetRuntime();
 
-            clawClose();
-            robot.setArm(30, 0.4);
-            robot.setLift(200, 1);
-            moveTo(7, -7, 0, 4);
-            robot.setArm(580, 0.4);
-            moveTo(5, -36, 0, 3);
 
-            robot.setLift(880, 1);
-            moveTo(-1, -45, 0, 3);
+            //grab cone
+            clawClose();
+            robot.setArm(660, 0.4);
+
+            //drive to signal cone
+            moveTo(16, 0, 90, 4);
+            runtime.reset();
+            while (runtime.seconds() < 1) {
+                stay(21, 0, 90);
+            }
+
+            //detect color
+            if (sensorColor.red() > sensorColor.blue()) { // Detect Red
+                if (sensorColor.red() > sensorColor.green()) {
+                    telemetry.addLine("RED (A)");
+                    color = 1;
+                }
+            } else if (sensorColor.blue() > sensorColor.red()) { // Detect Blue
+                if (sensorColor.blue() > sensorColor.green()) {
+                    telemetry.addLine("BLUE (B)");
+                    color = 2;
+                }
+            } else if (sensorColor.green() > sensorColor.red()) { // Detect Green
+                if (sensorColor.green() > sensorColor.blue()) {
+                    telemetry.addLine("GREEN (C)");
+                    color = 3;
+                }
+            }
+
+            //drive to pole
+            robot.setLift(850, 1);
+            moveTo(44, -3, 90, 3);
+
+            //align with pole
             runtime.reset();
             while (runtime.seconds() < 1 && opModeIsActive()) {
-                stay(-1, -56, -45);
+                stay(56, -6, 45);
             }
-            robot.setLift(700, 1);
 
+            //lower lift
+            robot.setLift(680, 1);
+
+            //drop cone
             runtime.reset();
-            while (runtime.seconds() < 0.2 && opModeIsActive()) {
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 clawOpen();
+                robot.setLift(750, 1);
             }
 
             //start of 5 cycles
-            for (int i = 0; i < 5; i++){
+            for (int i = 0; i < 5; i++) {
                 alignwithconestack();
 
                 runtime.reset();
-                while (runtime.seconds() < 0.2 && opModeIsActive()) {
-                    clawClose();
-                    robot.setLift(armHeight[i], 0.5);
-                    robot.setArm(15, 0.3);
-                }
-
-                runtime.reset();
-                while (runtime.seconds() < 1.2 && opModeIsActive()) {
+                while (runtime.seconds() < 1.4 && opModeIsActive()) {
                     movetoconestack();
+                    robot.setLift(armHeight[i], 0.5);
+                    robot.setArm(5, 0.3);
                     clawOpen();
                 }
 
                 runtime.reset();
-                while (runtime.seconds() < 0.2 && opModeIsActive()) {
+                while (runtime.seconds() < 0.5 && opModeIsActive()) {
                     clawClose();
                 }
 
-                robot.setLift(900, 1);
-                robot.setArm(590, 0.4);
+                robot.setLift(875, 1);
+                robot.setArm(500, 0.4);
 
                 movetopole();
 
                 runtime.reset();
-                while (runtime.seconds() < 0.9 && opModeIsActive()) {
+                while (runtime.seconds() < 0.7 && opModeIsActive()) {
                     alignwithpole();
+                    robot.setArm(650, 0.4);
                 }
 
                 runtime.reset();
                 while (runtime.seconds() < 0.25 && opModeIsActive()) {
-                    robot.setLift(700, 1);
+                    alignwithpole();
+                    robot.setLift(680, 1);
                 }
 
                 runtime.reset();
-                while (runtime.seconds() < 0.1 && opModeIsActive()) {
+                while (runtime.seconds() < 0.3 && opModeIsActive()) {
+                    alignwithpole();
                     clawOpen();
+                    robot.setLift(750, 1);
                 }
-
             }
-
-
-            //parking
-            moveTo(0, -48, -90, 2);
-            clawClose();
-            robot.setLift(0, 0.5);
-            robot.setArm(3, 0.3);
-
+                //parking
+                moveTo(50, -3, 0, 2);
+                clawClose();
+                robot.setLift(0, 0.5);
+                robot.setArm(3, 0.3);
 
             if(tag1Found == true) {
                 // Enter park code here
