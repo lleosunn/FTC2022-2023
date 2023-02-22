@@ -21,28 +21,25 @@ import android.view.View;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @Autonomous
-public class FINALRIGHT extends LinearOpMode {
+public class WOODright extends LinearOpMode {
 
-    private static double maxpower = 0.6;
+    private static double maxpower = 0.7;
 
     //motors
     private DcMotor fl = null;
     private DcMotor fr = null;
     private DcMotor bl = null;
     private DcMotor br = null;
+
     private DcMotor lift1 = null;
     private DcMotor lift2 = null;
     private DcMotor arm = null;
 
     //servos
-    Servo lclaw;
-    Servo rclaw;
-    Servo odo1;
-    Servo odo2;
+    Servo claw;
+    Servo wrist;
 
     //sensors (color, odometers, imu)
-    ColorSensor sensorColor;
-    DistanceSensor sensorDistance;
     DcMotor verticalLeft, verticalRight, horizontal;
     BNO055IMU imu;
     BNO055IMU.Parameters parameters;
@@ -106,33 +103,19 @@ public class FINALRIGHT extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "arm");
 
         //servos
-        lclaw = hardwareMap.get(Servo.class, "lclaw");
-        rclaw = hardwareMap.get(Servo.class, "rclaw");
-        Servo odo1 = hardwareMap.get(Servo.class, "odo1");
-        Servo odo2 = hardwareMap.get(Servo.class, "odo2");
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
         //odometers
         verticalLeft = hardwareMap.dcMotor.get("fl");
         verticalRight = hardwareMap.dcMotor.get("br");
         horizontal = hardwareMap.dcMotor.get("fr");
 
-        //color sensor
-        sensorColor = hardwareMap.get(ColorSensor.class, "color1");
-        sensorDistance = hardwareMap.get(DistanceSensor.class, "color1");
-        float hsvValues[] = {0F, 0F, 0F};
-        final float values[] = hsvValues;
-        final double SCALE_FACTOR = 255;
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
         //robot hardware
         RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
         robot.innitHardwareMap();
 
         imuinit();
-
-        odo1.setPosition(1);
-        odo2.setPosition(0);
         sleep(500);
 
         telemetry.addData(">", "Press Play to start op mode");
@@ -149,61 +132,29 @@ public class FINALRIGHT extends LinearOpMode {
         Thread positionThread = new Thread(update);
         positionThread.start();
 
-        double color = 0;
-        int[] armHeight = {320, 240, 160, 80, 0};
+        int[] armHeight = {360, 270, 180, 90, 0};
         resetRuntime();
-
 
         //grab cone
         clawClose();
-        robot.setArm(650, 0.4);
-
-        //drive to signal cone
-        runtime.reset();
-        while (runtime.seconds() < 1.25) {
-            stay(-16, 0, -90);
-        }
-        runtime.reset();
-        while (runtime.seconds() < 1) {
-            stay(-21, 0, -90);
-        }
-
-        //detect color
-        if (sensorColor.red() > sensorColor.blue()) { // Detect Red
-            if (sensorColor.red() > sensorColor.green()) {
-                telemetry.addLine("RED (A)");
-                color = 1;
-            }
-        } else if (sensorColor.blue() > sensorColor.red()) { // Detect Blue
-            if (sensorColor.blue() > sensorColor.green()) {
-                telemetry.addLine("BLUE (B)");
-                color = 2;
-            }
-        } else if (sensorColor.green() > sensorColor.red()) { // Detect Green
-            if (sensorColor.green() > sensorColor.blue()) {
-                telemetry.addLine("GREEN (C)");
-                color = 3;
-            }
-        }
+        sleep(300);
+        robot.setArm(600, 0.8);
+        sleep(200);
+        wristTurn();
+        moveTo(-16, 0, -90, 3);
 
         //drive to pole
-        robot.setLift(875, 1);
-        moveTo(-40, -3, -90, 3);
+        robot.setLift(850, 1);
+        moveTo(-50, -3, -90, 3);
 
         //align with pole
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
-            stay(-56, -6, -45);
+            stay(-60, -8, -45);
         }
-
-        //lower lift
-        robot.setLift(680, 1);
-
-        //drop cone
         runtime.reset();
         while (runtime.seconds() < 0.3 && opModeIsActive()) {
             clawOpen();
-            robot.setLift(750, 1);
         }
 
         //start of 5 cycles
@@ -214,7 +165,8 @@ public class FINALRIGHT extends LinearOpMode {
             while (runtime.seconds() < 1.4 && opModeIsActive()) {
                 movetoconestack();
                 robot.setLift(armHeight[i], 0.5);
-                robot.setArm(5, 0.3);
+                robot.setArm(1, 0.5);
+                wristReset();
                 clawOpen();
             }
 
@@ -223,53 +175,36 @@ public class FINALRIGHT extends LinearOpMode {
                 clawClose();
             }
 
-            robot.setLift(875, 1);
-            robot.setArm(500, 0.4);
+            robot.setLift(850, 1);
+            robot.setArm(600, 0.8);
 
             movetopole();
+            wristTurn();
 
             runtime.reset();
-            while (runtime.seconds() < 0.7 && opModeIsActive()) {
+            while (runtime.seconds() < 1 && opModeIsActive()) {
                 alignwithpole();
-                robot.setArm(645, 0.4);
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.25 && opModeIsActive()) {
-                alignwithpole();
-                robot.setLift(680, 1);
-            }
-
-            runtime.reset();
-            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+            while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 alignwithpole();
                 clawOpen();
-                robot.setLift(750, 1);
             }
 
         }
 
 
         //parking
-        moveTo(-50, -3, 0, 2);
+        moveTo(-50, -3, 0, 1);
         clawClose();
+        wristReset();
         robot.setLift(0, 0.5);
-        robot.setArm(3, 0.3);
+        robot.setArm(0, 0.3);
 
-        runtime.reset();
-        if (color == 1){
-            moveTo(-50, -24, 0, 2);
-        }
-        else if (color == 2) {
-            while (runtime.seconds() < 2) {
-                stay(-50, -2, 0);
-            }
-        }
-        else {
-            moveTo(-50, 24, 0, 2);
-        }
         update.stop();
         stop();
+
 
 
     }
@@ -279,23 +214,27 @@ public class FINALRIGHT extends LinearOpMode {
     }
 
     public void movetoconestack() {
-        stay(-50, 23.5, 0);
+        stay(-50, 18, 0);
     }
 
     public void movetopole() {
-        moveTo(-50, 5, 0, 3);
+        moveTo(-50, 0, 0, 3);
     }
 
     public void alignwithpole() {
-        stay(-54, -4.5, -35);
+        stay(-59.5, -10.5, -35);
     }
     public void clawOpen() {
-        lclaw.setPosition(0.25);
-        rclaw.setPosition(0.75);
+        claw.setPosition(0.4);
     }
     public void clawClose() {
-        lclaw.setPosition(0.47);
-        rclaw.setPosition(0.53);
+        claw.setPosition(0.515);
+    }
+    public void wristTurn() {
+        wrist.setPosition(0.79);
+    }
+    public void wristReset() {
+        wrist.setPosition(0.13);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
