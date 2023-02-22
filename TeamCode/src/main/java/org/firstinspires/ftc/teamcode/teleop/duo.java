@@ -113,7 +113,7 @@ public class duo extends LinearOpMode {
             }
 
             if (gamepad2.a) { //deposit position
-                arm.setTargetPosition(650);
+                arm.setTargetPosition(640);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.4);
                 clawClose();
@@ -132,8 +132,8 @@ public class duo extends LinearOpMode {
             }
 
             if(gamepad2.dpad_up) { // high
-                lift1.setTargetPosition(900);
-                lift2.setTargetPosition(900);
+                lift1.setTargetPosition(875);
+                lift2.setTargetPosition(875);
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift1.setPower(1);

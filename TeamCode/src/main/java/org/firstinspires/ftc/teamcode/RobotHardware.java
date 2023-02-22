@@ -44,8 +44,8 @@ public class RobotHardware {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lift1.setDirection(DcMotor.Direction.REVERSE);
-        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift1.setDirection(DcMotor.Direction.FORWARD);
+        lift2.setDirection(DcMotorSimple.Direction.FORWARD); //reverse for old robot
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
