@@ -183,16 +183,14 @@ public class WOODright extends LinearOpMode {
         Thread positionThread = new Thread(update);
         positionThread.start();
 
-        int[] armHeight = {360, 270, 180, 90, 0};
+        int[] armHeight = {270, 180, 90, 0};
         resetRuntime();
 
         //grab cone
         clawClose();
         sleep(300);
-        robot.setArm(600, 0.8);
-        sleep(200);
+        robot.setArm(569, 0.8);
         wristTurn();
-        moveTo(-16, 0, -90, 3);
 
         //drive to pole
         robot.setLift(850, 1);
@@ -201,10 +199,11 @@ public class WOODright extends LinearOpMode {
         //align with pole
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
-            stay(-60, -8, -45);
+            stay(-62, -10, -45);
         }
         runtime.reset();
         while (runtime.seconds() < 0.3 && opModeIsActive()) {
+            robot.setLift(360, 0.5);
             clawOpen();
         }
 
@@ -213,33 +212,32 @@ public class WOODright extends LinearOpMode {
             alignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 1.4 && opModeIsActive()) {
+            while (runtime.seconds() < 1 && opModeIsActive()) {
                 movetoconestack();
-                robot.setLift(armHeight[i], 0.5);
                 robot.setArm(1, 0.5);
                 wristReset();
                 clawOpen();
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.5 && opModeIsActive()) {
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 clawClose();
             }
 
             robot.setLift(850, 1);
-            robot.setArm(600, 0.8);
-
+            robot.setArm(569, 0.8);
             movetopole();
             wristTurn();
 
             runtime.reset();
-            while (runtime.seconds() < 1 && opModeIsActive()) {
+            while (runtime.seconds() < 0.8 && opModeIsActive()) {
                 alignwithpole();
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 alignwithpole();
+                robot.setLift(armHeight[i], 0.5);
                 clawOpen();
             }
 
@@ -247,11 +245,17 @@ public class WOODright extends LinearOpMode {
 
 
         //parking
-        moveTo(-50, -3, 0, 1);
-        clawClose();
+        moveTo(-50, -3, -90, 3);
         wristReset();
         robot.setLift(0, 0.5);
         robot.setArm(0, 0.3);
+        runtime.reset();
+        while (runtime.seconds() < 2 && opModeIsActive()) {
+            stay(-36, -3, -90);
+            clawClose();
+
+        }
+
 
         update.stop();
         stop();
@@ -269,11 +273,11 @@ public class WOODright extends LinearOpMode {
     }
 
     public void movetopole() {
-        moveTo(-50, 0, 0, 3);
+        moveTo(-50, -2, 0, 3);
     }
 
     public void alignwithpole() {
-        stay(-59.5, -10.5, -35);
+        stay(-59, -13, -35);
     }
     public void clawOpen() {
         claw.setPosition(0.4);

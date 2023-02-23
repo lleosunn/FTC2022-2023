@@ -143,58 +143,75 @@ public class WOODrightcamera extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        //motors
+        fl = hardwareMap.get(DcMotor.class, "fl");
+        fr = hardwareMap.get(DcMotor.class, "fr");
+        bl = hardwareMap.get(DcMotor.class, "bl");
+        br = hardwareMap.get(DcMotor.class, "br");
+        lift1 = hardwareMap.get(DcMotor.class, "lift1");
+        lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        arm = hardwareMap.get(DcMotor.class, "arm");
+
+        //servos
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+
+        //odometers
+        verticalLeft = hardwareMap.dcMotor.get("fl");
+        verticalRight = hardwareMap.dcMotor.get("br");
+        horizontal = hardwareMap.dcMotor.get("fr");
+
+        //robot hardware
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
+        robot.innitHardwareMap();
+
+        imuinit();
+        sleep(500);
+
+        telemetry.addData(">", "Press Play to start op mode");
+        telemetry.addData("angle", getAngle());
+        telemetry.update();
+
+        //start of camera code
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new org.firstinspires.ftc.teamcode.auto.AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 camera.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
             }
-
             @Override
             public void onError(int errorCode) {
-
             }
         });
-
         telemetry.setMsTransmissionInterval(50);
         boolean tag1Found = false;
         boolean tag2Found = false;
         boolean tag3Found = false;
 
-        /*
-         * The INIT-loop:
-         * This REPLACES waitForStart!
-         */
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
-
             if (currentDetections.size() != 0) {
-
-
                 for (AprilTagDetection tag : currentDetections) {
                     if (tag.id == 9) {
                         tagOfInterest = tag;
                         tag1Found = true;
                         break;
                     }
-
                     if (tag.id == 11) {
                         tagOfInterest = tag;
                         tag2Found = true;
                         break;
                     }
-
                     if (tag.id == 18) {
                         tagOfInterest = tag;
                         tag3Found = true;
                         break;
                     }
                 }
-
                 if (tag1Found) {
                     telemetry.addLine("Tag 1 Located!");
                     tagToTelemetry(tagOfInterest);
@@ -206,7 +223,6 @@ public class WOODrightcamera extends LinearOpMode {
                     tagToTelemetry(tagOfInterest);
                 } else {
                     telemetry.addLine("Don't see tag of interest :(");
-
                     if (tagOfInterest == null) {
                         telemetry.addLine("(The tag has never been seen)");
                     } else {
@@ -214,73 +230,19 @@ public class WOODrightcamera extends LinearOpMode {
                         tagToTelemetry(tagOfInterest);
                     }
                 }
-
             } else {
                 telemetry.addLine("Don't see tag of interest :(");
-
                 if (tagOfInterest == null) {
                     telemetry.addLine("(The tag has never been seen)");
                 } else {
                     telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
                 }
-
             }
 
             telemetry.update();
             sleep(20);
         }
-
-        /*
-         * The START command just came in: now work off the latest snapshot acquired
-         * during the init loop.
-         */
-
-        /* Update the telemetry */
-        if (tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            telemetry.update();
-        } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
-
-        /* Actually do something useful */
-        if (tagOfInterest == null) {
-            /*
-             * Insert your autonomous code here, presumably running some default configuration
-             * since the tag was never sighted during INIT
-             */
-        } else {
-            //motors
-            fl = hardwareMap.get(DcMotor.class, "fl");
-            fr = hardwareMap.get(DcMotor.class, "fr");
-            bl = hardwareMap.get(DcMotor.class, "bl");
-            br = hardwareMap.get(DcMotor.class, "br");
-            lift1 = hardwareMap.get(DcMotor.class, "lift1");
-            lift2 = hardwareMap.get(DcMotor.class, "lift2");
-            arm = hardwareMap.get(DcMotor.class, "arm");
-
-            //servos
-            claw = hardwareMap.get(Servo.class, "claw");
-            wrist = hardwareMap.get(Servo.class, "wrist");
-
-            //odometers
-            verticalLeft = hardwareMap.dcMotor.get("fl");
-            verticalRight = hardwareMap.dcMotor.get("br");
-            horizontal = hardwareMap.dcMotor.get("fr");
-
-            //robot hardware
-            RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
-            robot.innitHardwareMap();
-
-            imuinit();
-            sleep(500);
-
-            telemetry.addData(">", "Press Play to start op mode");
-            telemetry.addData("angle", getAngle());
-            telemetry.update();
 
             waitForStart();
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -292,28 +254,26 @@ public class WOODrightcamera extends LinearOpMode {
             Thread positionThread = new Thread(update);
             positionThread.start();
 
-            int[] armHeight = {360, 270, 180, 90, 0};
+            int[] armHeight = {270, 180, 90, 0, 0};
             resetRuntime();
 
             //grab cone
             clawClose();
-            sleep(300);
-            robot.setArm(600, 0.8);
-            sleep(200);
+            moveTo(0, -50, 0, 8);
+            robot.setArm(569, 0.8);
             wristTurn();
-            moveTo(-16, 0, -90, 3);
-
-            //drive to pole
             robot.setLift(850, 1);
-            moveTo(-50, -3, -90, 3);
+
+            moveTo(0, -50, 45, 3);
 
             //align with pole
             runtime.reset();
             while (runtime.seconds() < 1 && opModeIsActive()) {
-                stay(-60, -8, -45);
+                stay(4, -53.5, 45);
             }
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
+                robot.setLift(360, 0.5);
                 clawOpen();
             }
 
@@ -322,69 +282,59 @@ public class WOODrightcamera extends LinearOpMode {
                 alignwithconestack();
 
                 runtime.reset();
-                while (runtime.seconds() < 1.4 && opModeIsActive()) {
+                while (runtime.seconds() < 1 && opModeIsActive()) {
                     movetoconestack();
-                    robot.setLift(armHeight[i], 0.5);
                     robot.setArm(1, 0.5);
                     wristReset();
                     clawOpen();
                 }
 
                 runtime.reset();
-                while (runtime.seconds() < 0.5 && opModeIsActive()) {
+                while (runtime.seconds() < 0.3 && opModeIsActive()) {
                     clawClose();
                 }
 
                 robot.setLift(850, 1);
-                robot.setArm(600, 0.8);
-
+                robot.setArm(569, 0.8);
                 movetopole();
                 wristTurn();
 
                 runtime.reset();
-                while (runtime.seconds() < 1 && opModeIsActive()) {
+                while (runtime.seconds() < 0.8 && opModeIsActive()) {
                     alignwithpole();
                 }
 
                 runtime.reset();
                 while (runtime.seconds() < 0.2 && opModeIsActive()) {
                     alignwithpole();
+                    robot.setLift(armHeight[i], 0.5);
                     clawOpen();
                 }
 
             }
 
-
             //parking
-            moveTo(-50, -3, 0, 1);
+            moveTo(0, -45, 0, 3);
             clawClose();
             wristReset();
-            robot.setLift(0, 0.5);
             robot.setArm(0, 0.3);
 
             if(tag1Found == true) {
-                // Enter park code here
-                moveTo(-50, -24, 0, 2);
-
+                moveTo(24, -50, 0, 0);
             } else if(tag2Found == true) {
-                // Enter park code here
-                while (runtime.seconds() < 2) {
-                    stay(-50, -2, 0);
-                }
+                moveTo(-4, -50, 0, 0);
             } else if(tag3Found == true) {
-                moveTo(-50, 24, 0, 2);
+                moveTo(-27, -50, 0, 0);
             } else {
-                moveTo(-50, 24, 0, 2);
+                moveTo(24, -50, 0, 0);
             }
 
             update.stop();
             stop();
         }
 
-
-    }
     void tagToTelemetry(AprilTagDetection detection) {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        telemetry.addLine(String.format("Detected tag ID=%d", detection.id));
         telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x * FEET_PER_METER));
         telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y * FEET_PER_METER));
         telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z * FEET_PER_METER));
@@ -394,19 +344,19 @@ public class WOODrightcamera extends LinearOpMode {
     }
 
     public void alignwithconestack() {
-        moveTo(-50, 2, 0, 5);
+        moveTo(-12, -43, 90, 4);
     }
 
     public void movetoconestack() {
-        stay(-50, 18, 0);
+        stay(-24, -43, 90);
     }
 
     public void movetopole() {
-        moveTo(-50, 0, 0, 3);
+        moveTo(0, -45, 45, 3);
     }
 
     public void alignwithpole() {
-        stay(-59.5, -10.5, -35);
+        stay(6.5, -53.5, 45);
     }
     public void clawOpen() {
         claw.setPosition(0.4);
@@ -425,47 +375,41 @@ public class WOODrightcamera extends LinearOpMode {
         double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
         double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
         double distance = Math.hypot(distanceX, distanceY);
-
         while(opModeIsActive() && distance > error) {
             distance = Math.hypot(distanceX, distanceY);
             distanceX = targetX - (update.x() / COUNTS_PER_INCH);
             distanceY = targetY - (update.y() / COUNTS_PER_INCH);
-
             double x = 0.075 * distanceX;
             double y = 0.075 * distanceY;
-            double turn = 0.035 * (update.h() - targetOrientation);
+            double turn = 0.04 * (update.h() - targetOrientation);
             double theta = Math.toRadians(update.h());
-
-            if (x > 0.6) {
-                x = 0.6;
+            if (x > maxpower) {
+                x = maxpower;
             }
-            else if (x < -0.6) {
-                x = -0.6;
+            else if (x < -maxpower) {
+                x = -maxpower;
             }
             else x = x;
-            if (y > 0.6) {
-                y = 0.6;
+            if (y > maxpower) {
+                y = maxpower;
             }
-            else if (y < -0.6) {
-                y = -0.6;
+            else if (y < -maxpower) {
+                y = -maxpower;
             }
             else y = y;
-            if (turn > 0.3) {
-                turn = 0.3;
+            if (turn > 0.2) {
+                turn = 0.2;
             }
-            else if (turn < -0.3) {
-                turn = -0.3;
+            else if (turn < -0.2) {
+                turn = -0.2;
             }
             else turn = turn;
-
             double l = y * Math.sin(theta + (Math.PI/4)) - x * Math.sin(theta - (Math.PI/4));
             double r = y * Math.cos(theta + (Math.PI/4)) - x * Math.cos(theta - (Math.PI/4));
-
             fl.setPower(l + turn);
             fr.setPower(r - turn);
             bl.setPower(r + turn);
             br.setPower(l - turn);
-
             if(isStopRequested()) {
                 update.stop();
             }
