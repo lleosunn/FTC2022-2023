@@ -318,7 +318,7 @@ public class WOODrightcamera extends LinearOpMode {
             }
 
             //start of 5 cycles
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++){
                 alignwithconestack();
 
                 runtime.reset();
