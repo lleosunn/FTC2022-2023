@@ -28,25 +28,6 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.odometry;
-import org.firstinspires.ftc.teamcode.RobotHardware;
-import android.app.Activity;
-
-import android.view.View;
-
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import java.util.ArrayList;
 
@@ -257,25 +238,29 @@ public class WOODrightcamera extends LinearOpMode {
             positionThread.start();
 
             int[] armHeight = {270, 180, 90, 0, 0};
+            int[] armClear = {370, 280, 190, 100, 0};
             resetRuntime();
 
-            //grab cone
+            //start of auto
             clawClose();
-            moveTo(0, -50, 0, 8);
+            wristReset();
+            moveTo(0, -50, 0, 40);
+
+            //raise cone while moving to pole
             robot.setArm(630, 0.8);
             wristTurn();
-            robot.setLift(880, 1);
-
-            moveTo(0, -50, 45, 3);
+            robot.setLift(900, 1);
+            moveTo(0, -50, 0, 8);
 
             //align with pole
+            moveTo(0, -50, 45, 3);
+            guiderSet();
             runtime.reset();
-            while (runtime.seconds() < 1 && opModeIsActive()) {
+            while (runtime.seconds() < 2 && opModeIsActive()) {
                 stay(5, -54, 45);
-                guiderSet();
             }
             runtime.reset();
-            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+            while (runtime.seconds() < 0.5 && opModeIsActive()) {
                 robot.setLift(360, 0.5);
                 clawOpen();
 
@@ -299,20 +284,23 @@ public class WOODrightcamera extends LinearOpMode {
                     clawClose();
                 }
 
-                robot.setLift(880, 1);
+                //lift cone to clear stack
+                while (lift1.getCurrentPosition() < armClear[i]) {
+                    robot.setLift(900, 1);
+                }
+
                 movetopole();
                 robot.setArm(630, 0.8);
-
                 wristTurn();
+                guiderSet();
 
                 runtime.reset();
                 while (runtime.seconds() < 0.8 && opModeIsActive()) {
                     alignwithpole();
-                    guiderSet();
                 }
 
                 runtime.reset();
-                while (runtime.seconds() < 0.2 && opModeIsActive()) {
+                while (runtime.seconds() < 0.5 && opModeIsActive()) {
                     alignwithpole();
                     robot.setLift(armHeight[i], 0.5);
                     clawOpen();
@@ -321,10 +309,10 @@ public class WOODrightcamera extends LinearOpMode {
             }
 
             //parking
-            moveTo(0, -45, 0, 3);
             clawClose();
             wristReset();
             robot.setArm(0, 0.3);
+            moveTo(0, -45, 0, 3);
 
             if(tag1Found == true) {
                 moveTo(24, -50, 0, 0);
