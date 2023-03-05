@@ -54,10 +54,10 @@ android {
     defaultConfig {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
-        minSdkVersion 24
+        minSdkVersion 23
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-        multiDexEnabled true
+
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
          * the master information published in the AndroidManifest.xml file of the FtcRobotController
@@ -94,14 +94,14 @@ android {
             signingConfig signingConfigs.release
 
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
         }
         debug {
             debuggable true
             jniDebuggable true
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a"
             }
         }
     }
@@ -125,10 +125,5 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
-    maven { url = 'https://maven.brott.dev/' }
-    mavenCentral()
 }
 
-dependencies {
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.5'
-}

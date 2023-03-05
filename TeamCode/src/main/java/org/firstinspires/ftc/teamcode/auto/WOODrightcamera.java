@@ -227,106 +227,106 @@ public class WOODrightcamera extends LinearOpMode {
             sleep(20);
         }
 
-            waitForStart();
-            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        waitForStart();
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            //start odometry thread
-            update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
-            Thread positionThread = new Thread(update);
-            positionThread.start();
+        //start odometry thread
+        update = new odometry(verticalLeft, verticalRight, horizontal, 10, imu);
+        Thread positionThread = new Thread(update);
+        positionThread.start();
 
-            int[] armHeight = {270, 180, 90, 0, 0};
-            int[] armClear = {370, 280, 190, 100, 0};
-            resetRuntime();
+        int[] armHeight = {270, 180, 90, 0, 0};
+        int[] armClear = {370, 280, 190, 100, 0};
+        resetRuntime();
 
-            //start of auto
-            clawClose();
-            wristReset();
-            moveTo(0, -50, 0, 40);
+        //start of auto
+        clawClose();
+        wristReset();
+        moveTo(0, -50, 0, 40);
 
-            //raise cone while moving to pole
+        //raise cone while moving to pole
+        robot.setArm(630, 0.8);
+        wristTurn();
+        robot.setLift(900, 1);
+        moveTo(0, -50, 0, 8);
+
+        //align with pole
+        moveTo(0, -50, 45, 3);
+        guiderSet();
+        runtime.reset();
+        while (runtime.seconds() < 2 && opModeIsActive()) {
+            stay(5, -54, 45);
+        }
+        runtime.reset();
+        while (runtime.seconds() < 0.5 && opModeIsActive()) {
+            robot.setLift(360, 0.5);
+            clawOpen();
+
+        }
+
+        //start of 5 cycles
+        for (int i = 0; i < 5; i++){
+            guiderBack();
+            alignwithconestack();
+
+            runtime.reset();
+            while (runtime.seconds() < 1 && opModeIsActive()) {
+                movetoconestack();
+                robot.setArm(1, 0.5);
+                wristReset();
+                clawOpen();
+            }
+
+            runtime.reset();
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+                clawClose();
+            }
+
+            //lift cone to clear stack
+            while (lift1.getCurrentPosition() < armClear[i]) {
+                robot.setLift(900, 1);
+            }
+
+            movetopole();
             robot.setArm(630, 0.8);
             wristTurn();
-            robot.setLift(900, 1);
-            moveTo(0, -50, 0, 8);
-
-            //align with pole
-            moveTo(0, -50, 45, 3);
             guiderSet();
+
             runtime.reset();
-            while (runtime.seconds() < 2 && opModeIsActive()) {
-                stay(5, -54, 45);
+            while (runtime.seconds() < 0.8 && opModeIsActive()) {
+                alignwithpole();
             }
+
             runtime.reset();
             while (runtime.seconds() < 0.5 && opModeIsActive()) {
-                robot.setLift(360, 0.5);
+                alignwithpole();
+                robot.setLift(armHeight[i], 0.5);
                 clawOpen();
-
             }
 
-            //start of 5 cycles
-            for (int i = 0; i < 5; i++){
-                guiderBack();
-                alignwithconestack();
-
-                runtime.reset();
-                while (runtime.seconds() < 1 && opModeIsActive()) {
-                    movetoconestack();
-                    robot.setArm(1, 0.5);
-                    wristReset();
-                    clawOpen();
-                }
-
-                runtime.reset();
-                while (runtime.seconds() < 0.3 && opModeIsActive()) {
-                    clawClose();
-                }
-
-                //lift cone to clear stack
-                while (lift1.getCurrentPosition() < armClear[i]) {
-                    robot.setLift(900, 1);
-                }
-
-                movetopole();
-                robot.setArm(630, 0.8);
-                wristTurn();
-                guiderSet();
-
-                runtime.reset();
-                while (runtime.seconds() < 0.8 && opModeIsActive()) {
-                    alignwithpole();
-                }
-
-                runtime.reset();
-                while (runtime.seconds() < 0.5 && opModeIsActive()) {
-                    alignwithpole();
-                    robot.setLift(armHeight[i], 0.5);
-                    clawOpen();
-                }
-
-            }
-
-            //parking
-            clawClose();
-            wristReset();
-            robot.setArm(0, 0.3);
-            moveTo(0, -45, 0, 3);
-
-            if(tag1Found == true) {
-                moveTo(24, -50, 0, 0);
-            } else if(tag2Found == true) {
-                moveTo(-4, -50, 0, 0);
-            } else if(tag3Found == true) {
-                moveTo(-27, -50, 0, 0);
-            } else {
-                moveTo(24, -50, 0, 0);
-            }
-
-            update.stop();
-            stop();
         }
+
+        //parking
+        clawClose();
+        wristReset();
+        robot.setArm(0, 0.3);
+        moveTo(0, -45, 0, 3);
+
+        if(tag1Found == true) {
+            moveTo(24, -50, 0, 0);
+        } else if(tag2Found == true) {
+            moveTo(-4, -50, 0, 0);
+        } else if(tag3Found == true) {
+            moveTo(-27, -50, 0, 0);
+        } else {
+            moveTo(24, -50, 0, 0);
+        }
+
+        update.stop();
+        stop();
+    }
 
     void tagToTelemetry(AprilTagDetection detection) {
         telemetry.addLine(String.format("Detected tag ID=%d", detection.id));
