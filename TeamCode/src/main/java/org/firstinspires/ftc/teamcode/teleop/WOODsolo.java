@@ -29,6 +29,8 @@ public class WOODsolo extends LinearOpMode {
 
     Servo claw;
     Servo wrist;
+    Servo guider;
+
 
     private DistanceSensor clawDistance;
 
@@ -48,6 +50,10 @@ public class WOODsolo extends LinearOpMode {
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
 
+        // new servo
+        guider = hardwareMap.get(Servo.class, "guider");
+
+
         clawDistance = hardwareMap.get(DistanceSensor.class, "clawDistance");
 
         fl.setDirection(DcMotor.Direction.FORWARD);
@@ -60,9 +66,9 @@ public class WOODsolo extends LinearOpMode {
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
         runtime.reset();
@@ -107,8 +113,8 @@ public class WOODsolo extends LinearOpMode {
                 if (distance < 30) {
                     clawClose();
                     sleep(200);
-                    lift1.setTargetPosition(825);
-                    lift2.setTargetPosition(825);
+                    lift1.setTargetPosition(900);
+                    lift2.setTargetPosition(900);
                     lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift1.setPower(1);
@@ -130,8 +136,8 @@ public class WOODsolo extends LinearOpMode {
 
             }
             if (gamepad1.dpad_up) {
-                lift1.setTargetPosition(825);
-                lift2.setTargetPosition(825);
+                lift1.setTargetPosition(900);
+                lift2.setTargetPosition(900);
 
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -141,8 +147,8 @@ public class WOODsolo extends LinearOpMode {
 
             }
             if (gamepad1.dpad_right) {
-                lift1.setTargetPosition(250);
-                lift2.setTargetPosition(250);
+                lift1.setTargetPosition(380);
+                lift2.setTargetPosition(380);
 
                 lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -151,7 +157,7 @@ public class WOODsolo extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (gamepad1.dpad_left) {
-                arm.setTargetPosition(750);
+                arm.setTargetPosition(730);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.8);
             }
@@ -171,7 +177,7 @@ public class WOODsolo extends LinearOpMode {
                 arm.setPower(0);
             }
             if (gamepad1.a) {
-                arm.setTargetPosition(600);
+                arm.setTargetPosition(618);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.8);
             }
@@ -195,9 +201,14 @@ public class WOODsolo extends LinearOpMode {
             if (gamepad1.right_trigger > 0.5) {
                 clawClose();
             }
-            if (gamepad1.left_trigger > 0.5) {
+            if (gamepad1.left_trigger > 0.99) {
                 clawOpen();
             }
+            if (gamepad1.left_trigger > 0.1) {
+                guiderSet();
+            } else if (arm.getCurrentPosition() > 720) {
+                guiderFlat();
+            } else guiderBack();
             if (gamepad1.x) {
                 wristTurn();
             }
@@ -219,5 +230,8 @@ public class WOODsolo extends LinearOpMode {
     public void wristReset() {
         wrist.setPosition(0.13);
     }
+    public void guiderBack() { guider.setPosition(0.45);}
+    public void guiderSet() { guider.setPosition(0.8);}
+    public void guiderFlat() {guider.setPosition(1);}
 }
 

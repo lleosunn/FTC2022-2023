@@ -29,6 +29,7 @@ public class WOODduo extends LinearOpMode {
 
     Servo claw;
     Servo wrist;
+    Servo guider;
 
     private DistanceSensor clawDistance;
 
@@ -47,6 +48,7 @@ public class WOODduo extends LinearOpMode {
 
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
+        guider = hardwareMap.get(Servo.class, "guider");
 
         clawDistance = hardwareMap.get(DistanceSensor.class, "clawDistance");
 
@@ -60,9 +62,9 @@ public class WOODduo extends LinearOpMode {
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
         runtime.reset();
@@ -84,7 +86,6 @@ public class WOODduo extends LinearOpMode {
 
         double distance = 0;
         double modifier = 0.5;
-
 
         while (opModeIsActive()) {
             distance = clawDistance.getDistance(DistanceUnit.MM);
@@ -113,10 +114,6 @@ public class WOODduo extends LinearOpMode {
             if (gamepad2.right_bumper) {
                 if (distance < 30) {
                     clawClose();
-                    sleep(200);
-                    setArm(600, 0.8);
-                    sleep(200);
-                    wristTurn();
                 }
             }
 
@@ -129,13 +126,13 @@ public class WOODduo extends LinearOpMode {
                 lift2.setPower(0);
             }
             if (gamepad2.dpad_up) {
-                setLift(825, 1);
+                setLift(830, 1);
             }
             if (gamepad2.dpad_right) {
-                setLift(250, 1);
+                setLift(260, 1);
             }
             if (gamepad2.dpad_left) {
-                setArm(750, 0.8);
+                setArm(720, 0.8);
             }
             if (gamepad2.dpad_down) {
                 setLift(0, 0.5);
@@ -147,6 +144,7 @@ public class WOODduo extends LinearOpMode {
             }
             if (gamepad2.a) {
                 setArm(600, 0.8);
+                wristTurn();
             }
             if (gamepad2.b) {
                 setArm(0, 0.5);
@@ -167,21 +165,27 @@ public class WOODduo extends LinearOpMode {
                 lift2.setPower(1);
             }
             if (gamepad2.right_stick_x < -0.5){
-                arm.setTargetPosition(arm.getCurrentPosition()-25);
+                arm.setTargetPosition(arm.getCurrentPosition()-50);
                 arm.setPower(1);
             }
             if (gamepad2.right_stick_x > 0.5){
-                arm.setTargetPosition(arm.getCurrentPosition()+25);
+                arm.setTargetPosition(arm.getCurrentPosition()+50);
                 arm.setPower(1);
             }
-
-
             if (gamepad2.right_trigger > 0.5) {
                 clawClose();
             }
-            if (gamepad2.left_trigger > 0.5) {
+            if (gamepad2.left_trigger > 0.5 || gamepad1.y) {
                 clawOpen();
             }
+//            if (gamepad2.left_trigger > 0.1) {
+//                guiderSet();
+//            } else if (arm.getCurrentPosition() > 720) {
+//                guiderFlat();
+//            } else guiderBack();
+            if (arm.getCurrentPosition() > 710) {
+                guiderFlat();
+            } else guiderBack();
             if (gamepad2.x) {
                 wristTurn();
             }
@@ -203,6 +207,9 @@ public class WOODduo extends LinearOpMode {
     public void wristReset() {
         wrist.setPosition(0.13);
     }
+    public void guiderBack() { guider.setPosition(0.45);}
+    public void guiderSet() { guider.setPosition(0.7);}
+    public void guiderFlat() {guider.setPosition(1);}
     public void setLift(int height, double power){
         lift1.setTargetPosition(height);
         lift2.setTargetPosition(height);

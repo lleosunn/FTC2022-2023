@@ -89,6 +89,7 @@ public class WOODrightcamera extends LinearOpMode {
     //servos
     Servo claw;
     Servo wrist;
+    Servo guider;
 
     //sensors (color, odometers, imu)
     DcMotor verticalLeft, verticalRight, horizontal;
@@ -156,6 +157,7 @@ public class WOODrightcamera extends LinearOpMode {
         //servos
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
+        guider = hardwareMap.get(Servo.class, "guider");
 
         //odometers
         verticalLeft = hardwareMap.dcMotor.get("fl");
@@ -260,25 +262,28 @@ public class WOODrightcamera extends LinearOpMode {
             //grab cone
             clawClose();
             moveTo(0, -50, 0, 8);
-            robot.setArm(569, 0.8);
+            robot.setArm(630, 0.8);
             wristTurn();
-            robot.setLift(850, 1);
+            robot.setLift(880, 1);
 
             moveTo(0, -50, 45, 3);
 
             //align with pole
             runtime.reset();
             while (runtime.seconds() < 1 && opModeIsActive()) {
-                stay(4, -53.5, 45);
+                stay(5, -54, 45);
+                guiderSet();
             }
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 robot.setLift(360, 0.5);
                 clawOpen();
+
             }
 
             //start of 5 cycles
             for (int i = 0; i < 5; i++){
+                guiderBack();
                 alignwithconestack();
 
                 runtime.reset();
@@ -294,14 +299,16 @@ public class WOODrightcamera extends LinearOpMode {
                     clawClose();
                 }
 
-                robot.setLift(850, 1);
-                robot.setArm(569, 0.8);
+                robot.setLift(880, 1);
                 movetopole();
+                robot.setArm(630, 0.8);
+
                 wristTurn();
 
                 runtime.reset();
                 while (runtime.seconds() < 0.8 && opModeIsActive()) {
                     alignwithpole();
+                    guiderSet();
                 }
 
                 runtime.reset();
@@ -356,8 +363,11 @@ public class WOODrightcamera extends LinearOpMode {
     }
 
     public void alignwithpole() {
-        stay(6.5, -53.5, 45);
+        stay(7, -54, 45);
     }
+    public void guiderBack() { guider.setPosition(0.45);}
+    public void guiderSet() { guider.setPosition(0.7);}
+    public void guiderFlat() {guider.setPosition(1);}
     public void clawOpen() {
         claw.setPosition(0.4);
     }
