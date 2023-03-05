@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -22,6 +23,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+@Disabled
 
 @Autonomous
 public class FieldCentricPIDTest extends LinearOpMode {
