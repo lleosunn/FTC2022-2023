@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class RIGHThuc extends LinearOpMode {
+public class RIGHTm extends LinearOpMode {
 
     private PIDController movePID;
     public static double p = 0.15, i = 0.5, d = 0.00000001; //0.15, 0.5, 8 0s 8
@@ -258,11 +258,10 @@ public class RIGHThuc extends LinearOpMode {
         //start of 5 cycles
         for (int i = 0; i < 5; i++){
             robot.guiderBack();
-            almostalignwithconestack();
+            alignwithstack();
             robot.setArm(10, 0.8);
             robot.wristReset();
             robot.clawOpen();
-            movetoalignwithconestack();
 
             runtime.reset();
             while (runtime.seconds() < 0.7 && opModeIsActive()) {
@@ -277,7 +276,7 @@ public class RIGHThuc extends LinearOpMode {
 
             //lift cone to clear stack
             while (lift1.getCurrentPosition() < 400) {
-                robot.setLift(950, 1);
+                robot.setLift(300, 1);
                 stayatstack();
             }
 
@@ -333,21 +332,18 @@ public class RIGHThuc extends LinearOpMode {
     }
 
 
-    public void almostalignwithconestack() {
-        moveTo(-12, -50, 90, 15);
-    }
-    public void movetoalignwithconestack() {
-        moveTo(-12, -50, 90, 4);
+    public void alignwithstack() {
+        moveTo(0, -50, 90, 3);
     }
 
     public void stayatstack() {stay (-24.5, -49, 90);}
 
     public void movetopole() {
-        moveTo(17, -55, 90, 14);
+        moveTo(0, -55, 90, 8);
     }
 
     public void alignwithpole() {
-        stay(27, -47, 135);
+        stay(12, -42, 135);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
