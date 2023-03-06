@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.RobotHardware;
 
 
 @TeleOp(name="WOODsolo", group="Linear Opmode")
@@ -22,7 +23,6 @@ public class WOODsolo extends LinearOpMode {
     private DcMotor fr = null;
     private DcMotor bl = null;
     private DcMotor br = null;
-
     private DcMotor lift1 = null;
     private DcMotor lift2 = null;
     private DcMotor arm = null;
@@ -49,26 +49,13 @@ public class WOODsolo extends LinearOpMode {
 
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
-
-        // new servo
         guider = hardwareMap.get(Servo.class, "guider");
-
 
         clawDistance = hardwareMap.get(DistanceSensor.class, "clawDistance");
 
-        fl.setDirection(DcMotor.Direction.FORWARD);
-        bl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.REVERSE);
-        br.setDirection(DcMotor.Direction.REVERSE);
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //robot hardware
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm, claw, wrist, guider);
+        robot.innitHardwareMap();
 
         waitForStart();
         runtime.reset();
@@ -111,19 +98,12 @@ public class WOODsolo extends LinearOpMode {
 
             if (gamepad1.right_bumper) {
                 if (distance < 30) {
-                    clawClose();
+                    robot.clawClose();
                     sleep(200);
-                    lift1.setTargetPosition(900);
-                    lift2.setTargetPosition(900);
-                    lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift1.setPower(1);
-                    lift2.setPower(1);
-                    arm.setTargetPosition(600);
-                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    arm.setPower(0.8);
+                    robot.setLift(900, 1);
+                    robot.setArm(600, 0.8);
                     sleep(200);
-                    wristTurn();
+                    robot.wristTurn();
                 }
             }
 
@@ -133,43 +113,19 @@ public class WOODsolo extends LinearOpMode {
                 lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 lift1.setPower(0);
-
+                lift2.setPower(0);
             }
             if (gamepad1.dpad_up) {
-                lift1.setTargetPosition(900);
-                lift2.setTargetPosition(900);
-
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                lift1.setPower(1);
-                lift2.setPower(1);
-
+                robot.setLift(900, 1);
             }
             if (gamepad1.dpad_right) {
-                lift1.setTargetPosition(380);
-                lift2.setTargetPosition(380);
-
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                lift1.setPower(1);
-                lift2.setPower(1);
+                robot.setLift(380, 1);
             }
             if (gamepad1.dpad_left) {
-                arm.setTargetPosition(730);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.8);
+                robot.setArm(730, 0.8);
             }
             if (gamepad1.dpad_down) {
-                lift1.setTargetPosition(0);
-                lift2.setTargetPosition(0);
-
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                lift1.setPower(0.3);
-                lift2.setPower(0.3);
+                robot.setLift(0, 0.5);
             }
             if (gamepad1.right_stick_button) {
                 arm.setTargetPosition(0);
@@ -177,61 +133,34 @@ public class WOODsolo extends LinearOpMode {
                 arm.setPower(0);
             }
             if (gamepad1.a) {
-                arm.setTargetPosition(618);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.8);
+                robot.setArm(618, 0.8);
             }
             if (gamepad1.b) {
-                arm.setTargetPosition(0);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setPower(0.5);
-                lift1.setTargetPosition(0);
-                lift2.setTargetPosition(0);
-
-                lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                lift1.setPower(0.3);
-                lift2.setPower(0.3);
-                wristReset();
-                clawClose();
+                robot.setLift(0, 0.5);
+                robot.setArm(0, 0.5);
+                robot.wristReset();
+                robot.clawClose();
             }
-
 
             if (gamepad1.right_trigger > 0.5) {
-                clawClose();
+                robot.clawClose();
             }
             if (gamepad1.left_trigger > 0.99) {
-                clawOpen();
+                robot.clawOpen();
             }
             if (gamepad1.left_trigger > 0.1) {
-                guiderSet();
+                robot.guiderSet();
             } else if (arm.getCurrentPosition() > 720) {
-                guiderFlat();
-            } else guiderBack();
+                robot.guiderFlat();
+            } else robot.guiderBack();
             if (gamepad1.x) {
-                wristTurn();
+                robot.wristTurn();
             }
             if (gamepad1.y) {
-                wristReset();
+                robot.wristReset();
             }
 
         }
     }
-    public void clawOpen() {
-        claw.setPosition(0.4);
-    }
-    public void clawClose() {
-        claw.setPosition(0.515);
-    }
-    public void wristTurn() {
-        wrist.setPosition(0.79);
-    }
-    public void wristReset() {
-        wrist.setPosition(0.13);
-    }
-    public void guiderBack() { guider.setPosition(0.45);}
-    public void guiderSet() { guider.setPosition(0.8);}
-    public void guiderFlat() {guider.setPosition(1);}
 }
 

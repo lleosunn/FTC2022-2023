@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.RobotHardware;
 
 
 @TeleOp(name="WOODduo", group="Linear Opmode")
@@ -52,19 +53,9 @@ public class WOODduo extends LinearOpMode {
 
         clawDistance = hardwareMap.get(DistanceSensor.class, "clawDistance");
 
-        fl.setDirection(DcMotor.Direction.FORWARD);
-        bl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.REVERSE);
-        br.setDirection(DcMotor.Direction.REVERSE);
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //robot hardware
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm, claw, wrist, guider);
+        robot.innitHardwareMap();
 
         waitForStart();
         runtime.reset();
@@ -100,10 +91,10 @@ public class WOODduo extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             double turn = -gamepad1.right_stick_x;
 
-            fl.setPower(modifier*(y + x + turn));
-            fr.setPower(modifier*(y - x - turn));
-            bl.setPower(modifier*(y - x + turn));
-            br.setPower(modifier*(y + x - turn));
+            fl.setPower(modifier * (y + x + turn));
+            fr.setPower(modifier * (y - x - turn));
+            bl.setPower(modifier * (y - x + turn));
+            br.setPower(modifier * (y + x - turn));
 
             if (gamepad1.right_trigger > 0) {
                 modifier = 0.3;
@@ -113,7 +104,7 @@ public class WOODduo extends LinearOpMode {
 
             if (gamepad2.right_bumper) {
                 if (distance < 30) {
-                    clawClose();
+                    robot.clawClose();
                 }
             }
 
@@ -126,16 +117,16 @@ public class WOODduo extends LinearOpMode {
                 lift2.setPower(0);
             }
             if (gamepad2.dpad_up) {
-                setLift(830, 1);
+                robot.setLift(830, 1);
             }
             if (gamepad2.dpad_right) {
-                setLift(260, 1);
+                robot.setLift(260, 1);
             }
             if (gamepad2.dpad_left) {
-                setArm(720, 0.8);
+                robot.setArm(720, 0.8);
             }
             if (gamepad2.dpad_down) {
-                setLift(0, 0.5);
+                robot.setLift(0, 0.5);
             }
             if (gamepad2.right_stick_button) {
                 arm.setTargetPosition(0);
@@ -143,85 +134,52 @@ public class WOODduo extends LinearOpMode {
                 arm.setPower(0);
             }
             if (gamepad2.a) {
-                setArm(600, 0.8);
-                wristTurn();
+                robot.setArm(600, 0.8);
             }
             if (gamepad2.b) {
-                setArm(0, 0.5);
-                setLift(0, 0.5);
-                wristReset();
-                clawClose();
+                robot.setArm(0, 0.5);
+                robot.setLift(0, 0.5);
+                robot.wristReset();
+                robot.clawClose();
             }
-            if(gamepad2.left_stick_y > 0.5){
-                lift1.setTargetPosition(lift1.getCurrentPosition()-50);
-                lift2.setTargetPosition(lift2.getCurrentPosition()-50);
+            if (gamepad2.left_stick_y > 0.5) {
+                lift1.setTargetPosition(lift1.getCurrentPosition() - 50);
+                lift2.setTargetPosition(lift2.getCurrentPosition() - 50);
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
-            if(gamepad2.left_stick_y < -0.5){
-                lift1.setTargetPosition(lift1.getCurrentPosition()+100);
-                lift2.setTargetPosition(lift2.getCurrentPosition()+100);
+            if (gamepad2.left_stick_y < -0.5) {
+                lift1.setTargetPosition(lift1.getCurrentPosition() + 100);
+                lift2.setTargetPosition(lift2.getCurrentPosition() + 100);
                 lift1.setPower(1);
                 lift2.setPower(1);
             }
-            if (gamepad2.right_stick_x < -0.5){
-                arm.setTargetPosition(arm.getCurrentPosition()-50);
+            if (gamepad2.right_stick_x < -0.5) {
+                arm.setTargetPosition(arm.getCurrentPosition() - 50);
                 arm.setPower(1);
             }
-            if (gamepad2.right_stick_x > 0.5){
-                arm.setTargetPosition(arm.getCurrentPosition()+50);
+            if (gamepad2.right_stick_x > 0.5) {
+                arm.setTargetPosition(arm.getCurrentPosition() + 50);
                 arm.setPower(1);
             }
             if (gamepad2.right_trigger > 0.5) {
-                clawClose();
+                robot.clawClose();
             }
             if (gamepad2.left_trigger > 0.5 || gamepad1.y) {
-                clawOpen();
+                robot.clawOpen();
             }
-//            if (gamepad2.left_trigger > 0.1) {
-//                guiderSet();
-//            } else if (arm.getCurrentPosition() > 720) {
-//                guiderFlat();
-//            } else guiderBack();
             if (arm.getCurrentPosition() > 710) {
-                guiderFlat();
-            } else guiderBack();
+                robot.guiderFlat();
+            } else robot.guiderBack();
             if (gamepad2.x) {
-                wristTurn();
+                robot.wristTurn();
             }
             if (gamepad2.y) {
-                wristReset();
+                robot.wristReset();
             }
 
         }
     }
-    public void clawOpen() {
-        claw.setPosition(0.4);
-    }
-    public void clawClose() {
-        claw.setPosition(0.515);
-    }
-    public void wristTurn() {
-        wrist.setPosition(0.79);
-    }
-    public void wristReset() {
-        wrist.setPosition(0.13);
-    }
-    public void guiderBack() { guider.setPosition(0.45);}
-    public void guiderSet() { guider.setPosition(0.7);}
-    public void guiderFlat() {guider.setPosition(1);}
-    public void setLift(int height, double power){
-        lift1.setTargetPosition(height);
-        lift2.setTargetPosition(height);
-        lift1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift1.setPower(power);
-        lift2.setPower(power);
-    }
-    public void setArm(int angle, double power) {
-        arm.setTargetPosition(angle);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setPower(power);
-    }
 }
+
 

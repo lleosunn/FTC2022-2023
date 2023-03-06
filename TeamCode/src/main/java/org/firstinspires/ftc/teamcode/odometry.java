@@ -83,7 +83,7 @@ public class odometry implements Runnable {
         orientationChange = Math.toRadians(IMUChange);
         robotOrientationRadians = Math.toRadians(currentIMU); //using imu
 
-        double horizontalChange = auxChange - (orientationChange * 168.4); //50 for old robot
+        double horizontalChange = auxChange - (orientationChange * 10695); //168.4 10695 10000
 
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;

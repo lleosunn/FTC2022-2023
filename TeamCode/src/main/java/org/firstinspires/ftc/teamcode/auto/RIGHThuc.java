@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -23,7 +24,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class WOODright extends LinearOpMode {
+public class RIGHThuc extends LinearOpMode {
+
+    private PIDController movePID;
+    public static double p = 0.15, i = 0.5, d = 0.00000001; //0.15, 0.5, 8 0s 8
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -40,36 +44,30 @@ public class WOODright extends LinearOpMode {
     double cy = 221.506;
 
     // UNITS ARE METERS
-    double tagsize = 0.465; //Double check!!
-
+    double tagsize = 0.508; //Double check!!
 
     AprilTagDetection tagOfInterest = null;
 
-    private static double maxpower = 0.7;
+    private static double maxpower = 1;
 
-    //motors
+    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor fl = null;
     private DcMotor fr = null;
     private DcMotor bl = null;
     private DcMotor br = null;
-
     private DcMotor lift1 = null;
     private DcMotor lift2 = null;
     private DcMotor arm = null;
 
-    //servos
     Servo claw;
     Servo wrist;
     Servo guider;
 
-    //sensors (color, odometers, imu)
     DcMotor verticalLeft, verticalRight, horizontal;
     BNO055IMU imu;
     BNO055IMU.Parameters parameters;
     Orientation lastAngles = new Orientation();
     double globalAngle;
-
-    private ElapsedTime runtime = new ElapsedTime();
 
     public void imuinit() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -116,7 +114,8 @@ public class WOODright extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //motors
+        movePID = new PIDController(p, i, d);
+
         fl = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl = hardwareMap.get(DcMotor.class, "bl");
@@ -125,7 +124,6 @@ public class WOODright extends LinearOpMode {
         lift2 = hardwareMap.get(DcMotor.class, "lift2");
         arm = hardwareMap.get(DcMotor.class, "arm");
 
-        //servos
         claw = hardwareMap.get(Servo.class, "claw");
         wrist = hardwareMap.get(Servo.class, "wrist");
         guider = hardwareMap.get(Servo.class, "guider");
@@ -135,13 +133,11 @@ public class WOODright extends LinearOpMode {
         verticalRight = hardwareMap.dcMotor.get("br");
         horizontal = hardwareMap.dcMotor.get("fr");
 
-        //robot hardware
-        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm);
+        RobotHardware robot = new RobotHardware(fl, fr, bl, br, lift1, lift2, arm, claw, wrist, guider);
         robot.innitHardwareMap();
 
         imuinit();
         sleep(500);
-
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.addData("angle", getAngle());
         telemetry.update();
@@ -232,60 +228,62 @@ public class WOODright extends LinearOpMode {
         Thread positionThread = new Thread(update);
         positionThread.start();
 
-        int[] armHeight = {270, 180, 90, 0, 0};
+        int[] armHeight = {210, 140, 70, 0, 0};
         resetRuntime();
 
         //start of auto
-        clawClose();
-        wristReset();
-        moveTo(0, -50, 0, 40);
+        robot.clawClose();
+        robot.wristReset();
+        moveTo(0, -50, 0, 45);
 
         //raise cone while moving to pole
         robot.setArm(630, 0.8);
-        wristTurn();
+        robot.wristTurn();
         robot.setLift(950, 1);
-        moveTo(0, -50, 0, 11);
+        moveTo(0, -50, 0, 15);
 
         //align with pole
-        moveTo(0, -50, 45, 5);
-        guiderSet();
+        robot.guiderSet();
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
-            stay(5, -54, 45);
+            stay(5, -53, 40);
         }
         runtime.reset();
         while (runtime.seconds() < 0.5 && opModeIsActive()) {
-            robot.setLift(360, 0.5);
-            clawOpen();
-
+            robot.setLift(280, 0.5);
+            robot.clawOpen();
         }
 
         //start of 5 cycles
         for (int i = 0; i < 5; i++){
-            guiderBack();
-            alignwithconestack();
+            robot.guiderBack();
+            almostalignwithconestack();
+            robot.setArm(10, 0.8);
+            robot.wristReset();
+            robot.clawOpen();
+            movetoalignwithconestack();
 
             runtime.reset();
-            while (runtime.seconds() < 1 && opModeIsActive()) {
-                movetoconestack();
-                robot.setArm(1, 0.5);
-                wristReset();
-                clawOpen();
+            while (runtime.seconds() < 0.7 && opModeIsActive()) {
+                stayatconestack();
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
-                clawClose();
+                robot.clawClose();
+                stayatconestack();
             }
 
             //lift cone to clear stack
             while (lift1.getCurrentPosition() < 400) {
                 robot.setLift(950, 1);
+                stayatconestack();
             }
 
             robot.setArm(630, 0.8);
-            wristTurn();
-            guiderSet();
+            robot.wristTurn();
+            robot.guiderSet();
+
             movetopole();
 
             runtime.reset();
@@ -294,28 +292,29 @@ public class WOODright extends LinearOpMode {
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.5 && opModeIsActive()) {
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 alignwithpole();
                 robot.setLift(armHeight[i], 0.5);
-                clawOpen();
+                robot.clawOpen();
             }
 
         }
 
         //parking
-        clawClose();
-        wristReset();
+        robot.guiderBack();
+        robot.clawClose();
+        robot.wristReset();
         robot.setArm(0, 0.3);
-        moveTo(0, -45, 0, 3);
+        moveTo(0, -50, 0, 3);
 
         if(tag1Found == true) {
-            moveTo(24, -50, 0, 0);
+            moveTo(24, -52, 0, 0);
         } else if(tag2Found == true) {
-            moveTo(-4, -50, 0, 0);
+            moveTo(0, -52, 0, 0);
         } else if(tag3Found == true) {
-            moveTo(-27, -50, 0, 0);
+            moveTo(-24, -52, 0, 0);
         } else {
-            moveTo(24, -50, 0, 0);
+            moveTo(24, -52, 0, 0);
         }
 
         update.stop();
@@ -332,35 +331,22 @@ public class WOODright extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
 
-    public void alignwithconestack() {
-        moveTo(-12, -43, 90, 4);
+
+    public void almostalignwithconestack() {
+        moveTo(-12, -50, 90, 15);
+    }
+    public void movetoalignwithconestack() {
+        moveTo(-12, -50, 90, 4);
     }
 
-    public void movetoconestack() {
-        stay(-22, -43, 90);
-    }
+    public void stayatconestack() {stay (-24.5, -49, 90);}
 
     public void movetopole() {
-        moveTo(0, -45, 90, 3);
+        moveTo(17, -55, 90, 14);
     }
 
     public void alignwithpole() {
-        stay(7, -54, 45);
-    }
-    public void guiderBack() { guider.setPosition(0.4);}
-    public void guiderSet() { guider.setPosition(0.7);}
-    public void guiderFlat() {guider.setPosition(1);}
-    public void clawOpen() {
-        claw.setPosition(0.4);
-    }
-    public void clawClose() {
-        claw.setPosition(0.515);
-    }
-    public void wristTurn() {
-        wrist.setPosition(0.79);
-    }
-    public void wristReset() {
-        wrist.setPosition(0.13);
+        stay(27, -47, 135);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
@@ -368,13 +354,21 @@ public class WOODright extends LinearOpMode {
         double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
         double distance = Math.hypot(distanceX, distanceY);
         while(opModeIsActive() && distance > error) {
+
+            movePID.setPID(p, i, d);
             distance = Math.hypot(distanceX, distanceY);
             distanceX = targetX - (update.x() / COUNTS_PER_INCH);
             distanceY = targetY - (update.y() / COUNTS_PER_INCH);
-            double x = 0.075 * distanceX;
-            double y = 0.075 * distanceY;
-            double turn = 0.04 * (update.h() - targetOrientation);
+            double currentX = update.x() / COUNTS_PER_INCH;
+            double currentY = update.y() / COUNTS_PER_INCH;
+            double x = movePID.calculate(currentX, targetX);
+            double y = movePID.calculate(currentY, targetY);
+
+            double turn = 0.035 * (update.h() - targetOrientation);
             double theta = Math.toRadians(update.h());
+            if (Math.abs(distanceX) < 1 || Math.abs(distanceY) < 1) {
+                movePID.reset();
+            }
             if (x > maxpower) {
                 x = maxpower;
             }
@@ -389,11 +383,11 @@ public class WOODright extends LinearOpMode {
                 y = -maxpower;
             }
             else y = y;
-            if (turn > 0.2) {
-                turn = 0.2;
+            if (turn > 0.3) {
+                turn = 0.3;
             }
-            else if (turn < -0.2) {
-                turn = -0.2;
+            else if (turn < -0.3) {
+                turn = -0.3;
             }
             else turn = turn;
             double l = y * Math.sin(theta + (Math.PI/4)) - x * Math.sin(theta - (Math.PI/4));
@@ -412,21 +406,21 @@ public class WOODright extends LinearOpMode {
         double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
         double x = 0.1 * distanceX;
         double y = 0.1 * distanceY;
-        double turn = 0.035 * (update.h() - targetOrientation);
+        double turn = 0.04 * (update.h() - targetOrientation);
         double theta = Math.toRadians(update.h());
 
-        if (x > maxpower) {
-            x = maxpower;
+        if (x > 0.7) {
+            x = 0.7;
         }
-        else if (x < -maxpower) {
-            x = -maxpower;
+        else if (x < -0.7) {
+            x = -0.7;
         }
         else x = x;
-        if (y > maxpower) {
-            y = maxpower;
+        if (y > 0.7) {
+            y = 0.7;
         }
-        else if (y < -maxpower) {
-            y = -maxpower;
+        else if (y < -0.7) {
+            y = -0.7;
         }
         else y = y;
         if (turn > 0.3) {

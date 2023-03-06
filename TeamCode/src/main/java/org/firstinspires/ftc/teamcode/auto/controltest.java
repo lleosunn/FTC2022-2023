@@ -25,12 +25,12 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class FieldCentricPIDTest extends LinearOpMode {
+public class controltest extends LinearOpMode {
 
     private PIDController movePID;
-    public static double p = 0.15, i = 0.5, d = 0.00000001; //0.15, 0.5, 8 0s 8
+    public static double p = 0.1, i = 0, d = 0.000000;
 
-    private static double maxpower = 1;
+    private static double maxpower = 0.7;
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor fl = null;
@@ -144,7 +144,7 @@ public class FieldCentricPIDTest extends LinearOpMode {
             telemetry.addData("right encoder", verticalRight.getCurrentPosition());
             telemetry.addData("aux encoder", horizontal.getCurrentPosition());
             telemetry.update();
-            PIDstay(0, 100, 0);
+            stay(0, -50, 90);
 
         }
 
@@ -198,8 +198,6 @@ public class FieldCentricPIDTest extends LinearOpMode {
 
     public void PIDstay(double targetX, double targetY, double targetOrientation) {
         movePID.setPID(p, i ,d);
-        double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
-        double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
         double currentX = update.x() / COUNTS_PER_INCH;
         double currentY = update.y() / COUNTS_PER_INCH;
         double x = movePID.calculate(currentX, targetX);
@@ -207,10 +205,6 @@ public class FieldCentricPIDTest extends LinearOpMode {
 
         double turn = 0.035 * (update.h() - targetOrientation);
         double theta = Math.toRadians(update.h());
-
-        if (Math.abs(distanceX) < 1 || Math.abs(distanceY) < 1) {
-            movePID.reset();
-        }
 
         if (x > maxpower) {
             x = maxpower;
