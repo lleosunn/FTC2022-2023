@@ -92,7 +92,7 @@ public class RobotHardware {
     }
 
     public void guiderBack() {
-        guider.setPosition(0.35);
+        guider.setPosition(0.4);
     }
 
     public void guiderSet() {

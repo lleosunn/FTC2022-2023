@@ -87,9 +87,9 @@ public class WOODduo extends LinearOpMode {
             telemetry.addData("distance", distance);
             telemetry.update();
 
-            double x = gamepad1.left_stick_x;
-            double y = -gamepad1.left_stick_y;
-            double turn = -gamepad1.right_stick_x;
+            double x = -gamepad1.left_stick_x;
+            double y = gamepad1.left_stick_y;
+            double turn = gamepad1.right_stick_x;
 
             fl.setPower(modifier * (y + x + turn));
             fr.setPower(modifier * (y - x - turn));

@@ -144,7 +144,7 @@ public class FieldCentricPIDTest extends LinearOpMode {
             telemetry.addData("right encoder", verticalRight.getCurrentPosition());
             telemetry.addData("aux encoder", horizontal.getCurrentPosition());
             telemetry.update();
-            PIDstay(0, 100, 0);
+            PIDstay(0, 50, 90);
 
         }
 

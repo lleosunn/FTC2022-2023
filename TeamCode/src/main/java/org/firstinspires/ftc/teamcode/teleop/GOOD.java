@@ -135,7 +135,7 @@ public class GOOD extends LinearOpMode {
 
             fl.setPower(l + turn);
             fr.setPower(r - turn);
-            bl.setPower(1.2*(r + turn));
+            bl.setPower(r + turn);
             br.setPower(l - turn);
 
 

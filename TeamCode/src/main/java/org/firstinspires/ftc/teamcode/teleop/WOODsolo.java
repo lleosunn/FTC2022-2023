@@ -86,9 +86,9 @@ public class WOODsolo extends LinearOpMode {
             telemetry.addData("distance", distance);
             telemetry.update();
 
-            double x = gamepad1.left_stick_x;
-            double y = -gamepad1.left_stick_y;
-            double turn = -gamepad1.right_stick_x;
+            double x = -gamepad1.left_stick_x;
+            double y = gamepad1.left_stick_y;
+            double turn = gamepad1.right_stick_x;
             double modifier = 1;
 
             fl.setPower(modifier*(y + x + turn));
