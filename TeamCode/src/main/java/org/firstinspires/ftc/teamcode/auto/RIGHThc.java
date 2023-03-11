@@ -274,11 +274,11 @@ public class RIGHThc extends LinearOpMode {
             robot.setArm(5, 0.8);
 
             runtime.reset();
-            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+            while (runtime.seconds() < 0.2 && opModeIsActive()) {
                 stayatstack();
             }
             runtime.reset();
-            while (runtime.seconds() < 1.2 && opModeIsActive()) {
+            while (runtime.seconds() < 1.3 && opModeIsActive()) {
                 robot.wristReset();
                 stayatstack();
             }
@@ -323,13 +323,13 @@ public class RIGHThc extends LinearOpMode {
         moveTo(0, -50, 0, 3);
 
         if(tag1Found == true) {
-            moveTo(24, -52, 0, 0);
+            moveTo(24, -51, 0, 0);
         } else if(tag2Found == true) {
-            moveTo(0, -52, 0, 0);
+            moveTo(0, -51, 0, 0);
         } else if(tag3Found == true) {
-            moveTo(-24, -52, 0, 0);
+            moveTo(-24, -51, 0, 0);
         } else {
-            moveTo(24, -52, 0, 0);
+            moveTo(24, -51, 0, 0);
         }
 
         update.stop();
@@ -352,14 +352,14 @@ public class RIGHThc extends LinearOpMode {
         moveTo(0, -50, 90, 6);
     }
 
-    public void stayatstack() {stay (-26, -50, 90);}
+    public void stayatstack() {stay (-26.25, -50, 90);}
 
     public void movetopole() {
         moveTo(-8, -50, 90, 8);
     }
 
     public void alignwithpole() {
-        stay(5, -54, 50);
+        stay(5, -54, 45);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {

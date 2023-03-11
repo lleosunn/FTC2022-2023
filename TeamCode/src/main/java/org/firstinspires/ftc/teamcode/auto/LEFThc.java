@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.teamcode.odometry;
+import org.firstinspires.ftc.teamcode.RobotHardware;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -145,7 +146,7 @@ public class LEFThc extends LinearOpMode {
         //start of camera code
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        aprilTagDetectionPipeline = new org.firstinspires.ftc.teamcode.auto.AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -273,26 +274,26 @@ public class LEFThc extends LinearOpMode {
             robot.setArm(5, 0.8);
 
             runtime.reset();
-            while (runtime.seconds() < 0.3 && opModeIsActive()) {
-                stayatstack();
+            while (runtime.seconds() < 0.2 && opModeIsActive()) {
+                stay (26.5, -48 + drift[i], -85); //stay at stack
             }
             runtime.reset();
-            while (runtime.seconds() < 1.2 && opModeIsActive()) {
+            while (runtime.seconds() < 1.3 && opModeIsActive()) {
                 robot.wristReset();
-                stayatstack();
+                stay (26.5, -48 + drift [i], -85); //stay at stack
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 robot.clawClose();
-                stayatstack();
+                stay (26.5, -48 + drift[i], -85); //stay at stack
             }
 
             //lift cone to clear stack
             while (lift1.getCurrentPosition() < 400) {
                 robot.setLift(1025, 1);
             }
-            moveTo(21, -49.5, -90, 3);
+            moveTo(21, -48 + drift[i], -85, 3);
 
             robot.setArm(630, 0.8);
             robot.wristTurn();
@@ -302,12 +303,12 @@ public class LEFThc extends LinearOpMode {
 
             runtime.reset();
             while (runtime.seconds() < 1.4 && opModeIsActive()) {
-                alignwithpole();
+                stay(-4.5, -53.5 + drift[i], -45); //align with pole
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.5 && opModeIsActive()) {
-                alignwithpole();
+                stay(-4.5, -53.5 + drift[i], -45); //align with pole
                 robot.setLift(armHeight[i], 0.5);
                 robot.setArm(680, 0.8);
                 robot.clawOpen();
@@ -322,13 +323,13 @@ public class LEFThc extends LinearOpMode {
         moveTo(0, -50, 0, 3);
 
         if(tag1Found == true) {
-            moveTo(24, -52, 0, 0);
+            moveTo(24, -50, 0, 0);
         } else if(tag2Found == true) {
-            moveTo(0, -52, 0, 0);
+            moveTo(0, -50, 0, 0);
         } else if(tag3Found == true) {
-            moveTo(-24, -52, 0, 0);
+            moveTo(-24, -50, 0, 0);
         } else {
-            moveTo(24, -52, 0, 0);
+            moveTo(-24, -50, 0, 0);
         }
 
         update.stop();
@@ -348,17 +349,17 @@ public class LEFThc extends LinearOpMode {
 
 
     public void movetoalignwithconestack() {
-        moveTo(0, -50, -90, 6);
+        moveTo(0, -48, -85, 6);
     }
 
-    public void stayatstack() {stay (26, -50, -90);}
+    public void stayatstack() {stay (26.5, -48, -85);}
 
     public void movetopole() {
-        moveTo(8, -50, -90, 8);
+        moveTo(8, -48, -85, 8);
     }
 
     public void alignwithpole() {
-        stay(-5, -54, -50);
+        stay(-5, -54, -45);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
