@@ -77,6 +77,7 @@ public class WOODduo extends LinearOpMode {
 
         double distance = 0;
         double modifier = 0.5;
+        double turnmod = 0.7;
 
         while (opModeIsActive()) {
             distance = clawDistance.getDistance(DistanceUnit.MM);
@@ -91,16 +92,21 @@ public class WOODduo extends LinearOpMode {
             double y = gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
 
-            fl.setPower(modifier * (y + x + turn));
-            fr.setPower(modifier * (y - x - turn));
-            bl.setPower(modifier * (y - x + turn));
-            br.setPower(modifier * (y + x - turn));
+            fl.setPower(modifier * (y + x + turnmod*turn));
+            fr.setPower(modifier * (y - x - turnmod*turn));
+            bl.setPower(modifier * (y - x + turnmod*turn));
+            br.setPower(modifier * (y + x - turnmod*turn));
 
             if (gamepad1.right_trigger > 0) {
                 modifier = 0.3;
+                turnmod = 1;
             } else if (gamepad1.left_trigger > 0) {
                 modifier = 1;
-            } else modifier = 0.5;
+                turnmod = 1;
+            } else {
+                modifier = 0.5;
+                turnmod = 0.7;
+            }
 
             if (gamepad2.right_bumper) {
                 if (distance < 30) {
@@ -117,10 +123,10 @@ public class WOODduo extends LinearOpMode {
                 lift2.setPower(0);
             }
             if (gamepad2.dpad_up) {
-                robot.setLift(830, 1);
+                robot.setLift(880, 1);
             }
             if (gamepad2.dpad_right) {
-                robot.setLift(260, 1);
+                robot.setLift(300, 1);
             }
             if (gamepad2.dpad_left) {
                 robot.setArm(720, 0.8);
