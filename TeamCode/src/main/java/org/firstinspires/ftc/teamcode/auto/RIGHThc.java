@@ -48,7 +48,7 @@ public class RIGHThc extends LinearOpMode {
 
     AprilTagDetection tagOfInterest = null;
 
-    private static double maxpowermove = 1;
+    private static double maxpowermove = 0.95;
     private static double maxpowerstay = 0.6;
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -162,23 +162,34 @@ public class RIGHThc extends LinearOpMode {
         boolean tag2Found = false;
         boolean tag3Found = false;
 
+        robot.clawClose();
+
         while (!isStarted()) {
+            if(isStopRequested()) {
+                stop();
+            }
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             if (currentDetections.size() != 0) {
                 for (AprilTagDetection tag : currentDetections) {
                     if (tag.id == 9) {
                         tagOfInterest = tag;
                         tag1Found = true;
+                        tag2Found = false;
+                        tag3Found = false;
                         break;
                     }
                     if (tag.id == 11) {
                         tagOfInterest = tag;
                         tag2Found = true;
+                        tag1Found = false;
+                        tag3Found = false;
                         break;
                     }
                     if (tag.id == 18) {
                         tagOfInterest = tag;
                         tag3Found = true;
+                        tag1Found = false;
+                        tag2Found = false;
                         break;
                     }
                 }
@@ -229,42 +240,46 @@ public class RIGHThc extends LinearOpMode {
         Thread positionThread = new Thread(update);
         positionThread.start();
 
-        int[] armHeight = {210, 140, 70, 0, 0};
+        int[] armHeight = {240, 160, 80, 0, 0};
+        double[] drift = {0.2, 0.4, 0.6, 0.8, 1};
         resetRuntime();
 
         //start of auto
-        robot.clawClose();
         robot.wristReset();
-        moveTo(0, -50, 0, 45);
-
-        //raise cone while moving to pole
         robot.setArm(630, 0.8);
+        moveTo(0, -50, 0, 45);
         robot.wristTurn();
-        robot.setLift(950, 1);
-        moveTo(0, -50, 0, 15);
+        robot.setLift(1025, 1);
+        moveTo(0, -48, 0, 12);
+
 
         //align with pole
         robot.guiderSet();
         runtime.reset();
-        while (runtime.seconds() < 1 && opModeIsActive()) {
-            stay(5, -53, 40);
+        while (runtime.seconds() < 0.8 && opModeIsActive()) {
+            stay(4.5, -55.5, 45);
         }
         runtime.reset();
         while (runtime.seconds() < 0.5 && opModeIsActive()) {
-            robot.setLift(280, 0.5);
+            robot.setLift(320, 0.5);
+            robot.setArm(680, 0.8);
             robot.clawOpen();
         }
 
         //start of 5 cycles
         for (int i = 0; i < 5; i++){
             robot.guiderBack();
-            alignwithstack();
-            robot.setArm(10, 0.8);
-            robot.wristReset();
             robot.clawOpen();
+            movetoalignwithconestack();
+            robot.setArm(5, 0.8);
 
             runtime.reset();
-            while (runtime.seconds() < 0.7 && opModeIsActive()) {
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+                stayatstack();
+            }
+            runtime.reset();
+            while (runtime.seconds() < 1.2 && opModeIsActive()) {
+                robot.wristReset();
                 stayatstack();
             }
 
@@ -276,9 +291,9 @@ public class RIGHThc extends LinearOpMode {
 
             //lift cone to clear stack
             while (lift1.getCurrentPosition() < 400) {
-                robot.setLift(950, 1);
-                stayatstack();
+                robot.setLift(1025, 1);
             }
+            moveTo(-21, -49.5, 90, 3);
 
             robot.setArm(630, 0.8);
             robot.wristTurn();
@@ -287,14 +302,15 @@ public class RIGHThc extends LinearOpMode {
             movetopole();
 
             runtime.reset();
-            while (runtime.seconds() < 0.8 && opModeIsActive()) {
+            while (runtime.seconds() < 1.4 && opModeIsActive()) {
                 alignwithpole();
             }
 
             runtime.reset();
-            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+            while (runtime.seconds() < 0.5 && opModeIsActive()) {
                 alignwithpole();
                 robot.setLift(armHeight[i], 0.5);
+                robot.setArm(680, 0.8);
                 robot.clawOpen();
             }
 
@@ -302,7 +318,6 @@ public class RIGHThc extends LinearOpMode {
 
         //parking
         robot.guiderBack();
-        robot.clawClose();
         robot.wristReset();
         robot.setArm(0, 0.3);
         moveTo(0, -50, 0, 3);
@@ -332,18 +347,19 @@ public class RIGHThc extends LinearOpMode {
     }
 
 
-    public void alignwithstack() {
-        moveTo(0, -50, 90, 3);
+
+    public void movetoalignwithconestack() {
+        moveTo(0, -50, 90, 6);
     }
 
-    public void stayatstack() {stay (-24.5, -49, 90);}
+    public void stayatstack() {stay (-26, -50, 90);}
 
     public void movetopole() {
-        moveTo(0, -55, 90, 8);
+        moveTo(-8, -50, 90, 8);
     }
 
     public void alignwithpole() {
-        stay(12, -56, 45);
+        stay(5, -54, 50);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
@@ -399,12 +415,11 @@ public class RIGHThc extends LinearOpMode {
         }
     }
     public void stay(double targetX, double targetY, double targetOrientation) {
-        movePID.setPID(p, i, d);
-        double currentX = update.x() / COUNTS_PER_INCH;
-        double currentY = update.y() / COUNTS_PER_INCH;
-        double x = movePID.calculate(currentX, targetX);
-        double y = movePID.calculate(currentY, targetY);
-        double turn = 0.04 * (update.h() - targetOrientation);
+        double distanceX = targetX - (update.x() / COUNTS_PER_INCH);
+        double distanceY = targetY - (update.y() / COUNTS_PER_INCH);
+        double x = 0.1 * distanceX;
+        double y = 0.1 * distanceY;
+        double turn = 0.035 * (update.h() - targetOrientation);
         double theta = Math.toRadians(update.h());
 
         if (x > maxpowerstay) {
@@ -442,5 +457,6 @@ public class RIGHThc extends LinearOpMode {
         }
     }
 
-
 }
+
+

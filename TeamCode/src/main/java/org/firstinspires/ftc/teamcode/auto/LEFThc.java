@@ -8,14 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.odometry;
 import org.firstinspires.ftc.teamcode.RobotHardware;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.odometry;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -24,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous
-public class RIGHThuc extends LinearOpMode {
+public class LEFThc extends LinearOpMode {
 
     private PIDController movePID;
     public static double p = 0.15, i = 0.5, d = 0.00000001; //0.15, 0.5, 8 0s 8
@@ -146,7 +145,7 @@ public class RIGHThuc extends LinearOpMode {
         //start of camera code
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new org.firstinspires.ftc.teamcode.auto.AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -164,8 +163,10 @@ public class RIGHThuc extends LinearOpMode {
 
         robot.clawClose();
 
-        while (!isStarted() && opModeIsActive()) {
-            if(isStopRequested()) {stop();}
+        while (!isStarted()) {
+            if(isStopRequested()) {
+                stop();
+            }
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             if (currentDetections.size() != 0) {
                 for (AprilTagDetection tag : currentDetections) {
@@ -247,7 +248,7 @@ public class RIGHThuc extends LinearOpMode {
         robot.setArm(630, 0.8);
         moveTo(0, -50, 0, 45);
         robot.wristTurn();
-        robot.setLift(1000, 1);
+        robot.setLift(1025, 1);
         moveTo(0, -48, 0, 12);
 
 
@@ -255,7 +256,7 @@ public class RIGHThuc extends LinearOpMode {
         robot.guiderSet();
         runtime.reset();
         while (runtime.seconds() < 0.8 && opModeIsActive()) {
-            stay(4.5, -55.5, 45);
+            stay(-4.5, -55.5, -45);
         }
         runtime.reset();
         while (runtime.seconds() < 0.5 && opModeIsActive()) {
@@ -267,28 +268,31 @@ public class RIGHThuc extends LinearOpMode {
         //start of 5 cycles
         for (int i = 0; i < 5; i++){
             robot.guiderBack();
-            almostalignwithconestack();
-            robot.setArm(5, 0.8);
-            robot.wristReset();
             robot.clawOpen();
             movetoalignwithconestack();
+            robot.setArm(5, 0.8);
 
             runtime.reset();
-            while (runtime.seconds() < 0.7 && opModeIsActive()) {
-                stay (-26.25, -49.5 - drift[i], 90); //stay at stack
+            while (runtime.seconds() < 0.3 && opModeIsActive()) {
+                stayatstack();
+            }
+            runtime.reset();
+            while (runtime.seconds() < 1.2 && opModeIsActive()) {
+                robot.wristReset();
+                stayatstack();
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 robot.clawClose();
-                stay (-26.25, -49.5 - drift[i], 90); //stay at stack
+                stayatstack();
             }
 
             //lift cone to clear stack
             while (lift1.getCurrentPosition() < 400) {
-                robot.setLift(1000, 1);
-                stay (-24, -49.5 - drift[i], 90);
+                robot.setLift(1025, 1);
             }
+            moveTo(21, -49.5, -90, 3);
 
             robot.setArm(630, 0.8);
             robot.wristTurn();
@@ -297,13 +301,13 @@ public class RIGHThuc extends LinearOpMode {
             movetopole();
 
             runtime.reset();
-            while (runtime.seconds() < 0.7 && opModeIsActive()) {
-                stay(26, -45.5 - drift[i], 128); //align with pole
+            while (runtime.seconds() < 1.4 && opModeIsActive()) {
+                alignwithpole();
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.5 && opModeIsActive()) {
-                stay(26, -45.5 - drift[i], 128); // align with pole
+                alignwithpole();
                 robot.setLift(armHeight[i], 0.5);
                 robot.setArm(680, 0.8);
                 robot.clawOpen();
@@ -342,22 +346,19 @@ public class RIGHThuc extends LinearOpMode {
     }
 
 
-    public void almostalignwithconestack() {
-        moveTo(-12, -50, 90, 15);
-    }
 
     public void movetoalignwithconestack() {
-        moveTo(-14, -50, 90, 6);
+        moveTo(0, -50, -90, 6);
     }
 
-    public void stayatstack() {stay (-26, -50, 90);}
+    public void stayatstack() {stay (26, -50, -90);}
 
     public void movetopole() {
-        moveTo(22, -55, 90, 14);
+        moveTo(8, -50, -90, 8);
     }
 
     public void alignwithpole() {
-        stay(26.5, -46, 128);
+        stay(-5, -54, -50);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {
@@ -455,6 +456,6 @@ public class RIGHThuc extends LinearOpMode {
         }
     }
 
-    }
+}
 
 
