@@ -278,7 +278,7 @@ public class RIGHThc extends LinearOpMode {
                 stayatstack();
             }
             runtime.reset();
-            while (runtime.seconds() < 1.3 && opModeIsActive()) {
+            while (runtime.seconds() < 1.5 && opModeIsActive()) {
                 robot.wristReset();
                 stayatstack();
             }
@@ -318,9 +318,10 @@ public class RIGHThc extends LinearOpMode {
 
         //parking
         robot.guiderBack();
-        robot.wristReset();
-        robot.setArm(0, 0.3);
+        robot.setArm(300, 0.3);
         moveTo(0, -50, 0, 3);
+        robot.wristReset();
+
 
         if(tag1Found == true) {
             moveTo(24, -51, 0, 0);
@@ -355,7 +356,7 @@ public class RIGHThc extends LinearOpMode {
     public void stayatstack() {stay (-26.25, -50, 90);}
 
     public void movetopole() {
-        moveTo(-8, -50, 90, 8);
+        moveTo(-7.5, -50, 90, 8);
     }
 
     public void alignwithpole() {

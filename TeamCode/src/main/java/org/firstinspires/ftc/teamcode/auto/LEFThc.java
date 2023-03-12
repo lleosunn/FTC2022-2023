@@ -241,7 +241,8 @@ public class LEFThc extends LinearOpMode {
         positionThread.start();
 
         int[] armHeight = {240, 160, 80, 0, 0};
-        double[] drift = {0.2, 0.4, 0.6, 0.8, 1};
+        double[] drift = {0.4, 0.8, 1.2, 1.6, 2};
+        double[] adrift = {2, 4, 6, 8, 10};
         resetRuntime();
 
         //start of auto
@@ -275,18 +276,18 @@ public class LEFThc extends LinearOpMode {
 
             runtime.reset();
             while (runtime.seconds() < 0.2 && opModeIsActive()) {
-                stay (26.5, -48 + drift[i], -85); //stay at stack
+                stay (26.25, -48 + drift[i], -85); //stay at stack
             }
             runtime.reset();
             while (runtime.seconds() < 1.3 && opModeIsActive()) {
                 robot.wristReset();
-                stay (26.5, -48 + drift [i], -85); //stay at stack
+                stay (26.25, -48 + drift [i], -85); //stay at stack
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.3 && opModeIsActive()) {
                 robot.clawClose();
-                stay (26.5, -48 + drift[i], -85); //stay at stack
+                stay (26.25, -48 + drift[i], -85); //stay at stack
             }
 
             //lift cone to clear stack
@@ -303,12 +304,12 @@ public class LEFThc extends LinearOpMode {
 
             runtime.reset();
             while (runtime.seconds() < 1.4 && opModeIsActive()) {
-                stay(-4.5, -53.5 + drift[i], -45); //align with pole
+                stay(-4.5, -53.5 + drift[i], -45 - adrift[i]); //align with pole
             }
 
             runtime.reset();
             while (runtime.seconds() < 0.5 && opModeIsActive()) {
-                stay(-4.5, -53.5 + drift[i], -45); //align with pole
+                stay(-4.5, -53.5 + drift[i], -45 - adrift[i]); //align with pole
                 robot.setLift(armHeight[i], 0.5);
                 robot.setArm(680, 0.8);
                 robot.clawOpen();
@@ -318,18 +319,18 @@ public class LEFThc extends LinearOpMode {
 
         //parking
         robot.guiderBack();
+        robot.setArm(300, 0.3);
+        moveTo(0, -48, 0, 3);
         robot.wristReset();
-        robot.setArm(0, 0.3);
-        moveTo(0, -50, 0, 3);
 
         if(tag1Found == true) {
-            moveTo(24, -50, 0, 0);
+            moveTo(24, -47, 0, 0);
         } else if(tag2Found == true) {
-            moveTo(0, -50, 0, 0);
+            moveTo(0, -47, 0, 0);
         } else if(tag3Found == true) {
-            moveTo(-24, -50, 0, 0);
+            moveTo(-24, -47, 0, 0);
         } else {
-            moveTo(-24, -50, 0, 0);
+            moveTo(-24, -47, 0, 0);
         }
 
         update.stop();
@@ -355,7 +356,7 @@ public class LEFThc extends LinearOpMode {
     public void stayatstack() {stay (26.5, -48, -85);}
 
     public void movetopole() {
-        moveTo(8, -48, -85, 8);
+        moveTo(7, -48, -85, 8);
     }
 
     public void alignwithpole() {

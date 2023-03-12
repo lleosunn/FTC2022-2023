@@ -164,7 +164,7 @@ public class RIGHThuc extends LinearOpMode {
 
         robot.clawClose();
 
-        while (!isStarted() && opModeIsActive()) {
+        while (!isStarted()) {
             if(isStopRequested()) {stop();}
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             if (currentDetections.size() != 0) {
