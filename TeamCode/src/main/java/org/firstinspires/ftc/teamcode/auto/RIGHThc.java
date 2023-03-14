@@ -353,14 +353,14 @@ public class RIGHThc extends LinearOpMode {
         moveTo(0, -50, 90, 6);
     }
 
-    public void stayatstack() {stay (-26.25, -50, 90);}
+    public void stayatstack() {stay (-26.25, -50.5, 90);}
 
     public void movetopole() {
         moveTo(-7.5, -50, 90, 8);
     }
 
     public void alignwithpole() {
-        stay(5, -54, 45);
+        stay(5, -54.5, 42);
     }
 
     public void moveTo(double targetX, double targetY, double targetOrientation, double error) {

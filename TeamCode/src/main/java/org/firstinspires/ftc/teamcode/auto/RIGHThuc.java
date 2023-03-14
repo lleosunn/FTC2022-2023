@@ -165,7 +165,12 @@ public class RIGHThuc extends LinearOpMode {
         robot.clawClose();
 
         while (!isStarted()) {
-            if(isStopRequested()) {stop();}
+            if(isStopRequested()) {
+                camera.stopStreaming();
+                camera.stopRecordingPipeline();
+                camera.closeCameraDevice();
+                stop();
+            }
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
             if (currentDetections.size() != 0) {
                 for (AprilTagDetection tag : currentDetections) {
@@ -220,9 +225,7 @@ public class RIGHThuc extends LinearOpMode {
                 }
             }
 
-            if (isStopRequested()) {
-                stop();
-            }
+
 
             telemetry.update();
             sleep(20);
